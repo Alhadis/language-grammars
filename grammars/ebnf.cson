@@ -1,0 +1,122 @@
+name: "Extended Backus-Naur Form"
+scopeName: "source.ebnf"
+fileTypes: ["ebnf"]
+patterns: [include: "#main"]
+
+repository:
+	main:
+		patterns: [
+			{include: "#comment"}
+			{include: "#rule"}
+			{include: "#special"}
+		]
+	
+	# (* Comment *)
+	comment:
+		name:  "comment.block.ebnf"
+		begin: "\\(\\*"
+		end:   "\\*\\)"
+		beginCaptures: 0: name: "punctuation.definition.comment.begin.ebnf"
+		endCaptures:   0: name: "punctuation.definition.comment.end.ebnf"
+
+	
+	rule:
+		begin: "(?=[A-Za-z][A-Za-z0-9_]*)"
+		end:   ";"
+		endCaptures:
+			0: name: "punctuation.terminator.statement.ebnf"
+		patterns: [{
+			# Left-hand side
+			name:  "meta.lhs.ebnf"
+			begin: "\\G"
+			end:   "(?=[=;])"
+			patterns: [{
+				# Identifier
+				name: "entity.name.rule.identifier.ebnf"
+				match: "[A-Za-z][A-Za-z0-9_]*"
+			}]
+		},{
+			# Right-hand side
+			name:  "meta.rhs.ebnf"
+			begin: "="
+			end:   "(?=;)"
+			beginCaptures:
+				0: name: "keyword.operator.assignment.ebnf"
+			patterns: [include: "#rhs"]
+		}]
+	
+	# Stuff included inside a rule's right-hand side
+	rhs:
+		patterns: [{
+			# Concatenation (comma)
+			name: "punctuation.delimiter.comma.ebnf"
+			match: ","
+		},{
+			# Alternation (pipe)
+			name: "keyword.operator.logical.or.alternation.pipe.ebnf"
+			match: "\\|"
+		},{
+			# Exception (dash)
+			name: "keyword.operator.logical.minus.hyphen.exception.ebnf"
+			match: "-"
+		},{
+			# Repetition (asterisk)
+			name: "keyword.operator.logical.repetition.asterisk.star.ebnf"
+			match: "\\*"
+		},{
+			# ? SPECIAL OMFG ?
+			include: "#special"
+		},{
+			# "Terminals"
+			name:  "string.quoted.double.ebnf"
+			begin: '"'
+			end:   '"'
+			beginCaptures: 0: name: "punctuation.definition.string.begin.ebnf"
+			endCaptures:   0: name: "punctuation.definition.string.end.ebnf"
+		},{
+			# 'Terminals'
+			name: "string.quoted.single.ebnf"
+			begin: "'"
+			end:   "'"
+			beginCaptures: 0: name: "punctuation.definition.string.begin.ebnf"
+			endCaptures:   0: name: "punctuation.definition.string.end.ebnf"
+		},{
+			# [ Optional ]
+			name:  "meta.optional.ebnf"
+			begin: "\\["
+			end:   "\\]"
+			beginCaptures: 0: name: "punctuation.definition.square.bracket.begin.ebnf"
+			endCaptures:   0: name: "punctuation.definition.square.bracket.end.ebnf"
+			patterns: [include: "#rhs"]
+		},{
+			# { Repetition }
+			name: "meta.repetition.ebnf"
+			begin: "{"
+			end:   "}"
+			beginCaptures: 0: name: "punctuation.definition.curly.bracket.begin.ebnf"
+			endCaptures:   0: name: "punctuation.definition.curly.bracket.end.ebnf"
+			patterns: [include: "#rhs"]
+		},{
+			# ( Grouping )
+			name: "meta.group.ebnf"
+			begin: "\\("
+			end:   "\\)"
+			beginCaptures: 0: name: "punctuation.definition.round.bracket.begin.ebnf"
+			endCaptures:   0: name: "punctuation.definition.round.bracket.end.ebnf"
+			patterns: [include: "#rhs"]
+		},{
+			include: "#comment"
+		},{
+			# Rule reference
+			name:  "variable.parameter.argument.identifier.reference.ebnf"
+			match: "[A-Za-z][A-Za-z0-9_]*"
+		}]
+
+	# ? Special stuff ?
+	special:
+		name:  "meta.pragma.directive.special.ebnf"
+		begin: "\\?"
+		end:   "\\?"
+		contentName: "support.constant.language.pragma.ebnf"
+		beginCaptures: 0: name: "keyword.operator.pragma.begin.ebnf"
+		endCaptures:   0: name: "keyword.operator.pragma.end.ebnf"

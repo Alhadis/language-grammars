@@ -1,0 +1,8 @@
+".source.bnf":
+	Assignment:
+		prefix: "="
+		body: "::= "
+
+	Rule:
+		prefix: "rule"
+		body: "<${1:term}> ::= ${2:<definition>}"

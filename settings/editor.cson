@@ -1,0 +1,9 @@
+".source.bnf":
+	editor:
+		commentStart: "; "
+
+".source.ebnf":
+	editor:
+		commentStart: "(*"
+		commentEnd:   "*)"
+		increaseIndentPattern: "=\\s*$"

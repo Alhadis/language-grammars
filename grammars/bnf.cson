@@ -1,0 +1,82 @@
+name: "Backus-Naur Form"
+scopeName: "source.bnf"
+fileTypes: ["bnf"]
+patterns: [include: "#main"]
+
+repository:
+	main:
+		patterns: [
+			{include: "#rule"}
+		]
+	
+	rule:
+		name:  "meta.rule.bnf"
+		begin: "(?=<)"
+		end:   "$"
+		patterns: [{
+			# Term/rule name
+			name:  "meta.lhs.bnf"
+			begin: "\\G<"
+			end:   ">|(?=$)"
+			contentName: "entity.name.rule.identifier.bnf"
+			beginCaptures: 0: name: "punctuation.definition.angle.bracket.begin.bnf"
+			endCaptures:   0: name: "punctuation.definition.angle.bracket.end.bnf"
+		},{
+			# Definition
+			name:  "meta.rhs.bnf"
+			begin: "::="
+			end:   "(?=$)"
+			beginCaptures:
+				0: name: "keyword.operator.assignment.bnf"
+			patterns: [include: "#rhs"]
+		}]
+
+	# Stuff included in the right-hand half of a production rule
+	rhs:
+		patterns: [{
+			# Alternation (pipe)
+			name: "keyword.operator.logical.or.alternation.pipe.bnf"
+			match: "\\|"
+		},{
+			# Repetition (>= 1)
+			name: "keyword.operator.logical.repetition.asterisk.star.ebnf"
+			match: "\\*"
+		},{
+			# [ Optional ]
+			name:  "meta.optional.bnf"
+			begin: "\\["
+			end:   "\\]"
+			beginCaptures: 0: name: "punctuation.definition.square.bracket.begin.bnf"
+			endCaptures:   0: name: "punctuation.definition.square.bracket.end.bnf"
+			patterns: [include: "#rhs"]
+		},{
+			# { Repetition }
+			name: "meta.repetition.bnf"
+			begin: "{"
+			end:   "}"
+			beginCaptures: 0: name: "punctuation.definition.curly.bracket.begin.bnf"
+			endCaptures:   0: name: "punctuation.definition.curly.bracket.end.bnf"
+			patterns: [include: "#rhs"]
+		},{
+			# Term reference
+			name:  "meta.lhs.bnf"
+			begin: "<"
+			end:   ">|(?=$)"
+			contentName: "constant.language.term.bnf"
+			beginCaptures: 0: name: "punctuation.definition.angle.bracket.begin.bnf"
+			endCaptures:   0: name: "punctuation.definition.angle.bracket.end.bnf"
+		},{
+			# "Literal"
+			name:  "string.quoted.double.bnf"
+			begin: '"'
+			end:   '"'
+			beginCaptures: 0: name: "punctuation.definition.string.begin.bnf"
+			endCaptures:   0: name: "punctuation.definition.string.end.bnf"
+		},{
+			# 'Literal'
+			name: "string.quoted.single.bnf"
+			begin: "'"
+			end:   "'"
+			beginCaptures: 0: name: "punctuation.definition.string.begin.bnf"
+			endCaptures:   0: name: "punctuation.definition.string.end.bnf"
+		}]
