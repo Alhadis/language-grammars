@@ -1,3 +1,7 @@
+".source.abnf":
+	editor:
+		commentStart: "; "
+
 ".source.bnf":
 	editor:
 		commentStart: "; "

@@ -1,0 +1,193 @@
+name: "Augmented Backus-Naur Form"
+scopeName: "source.abnf"
+fileTypes: ["abnf"]
+patterns: [include: "#main"]
+
+repository:
+	main:
+		patterns: [
+			{include: "#comment"}
+			{include: "#rule"}
+		]
+
+	# Definition operator
+	assignment:
+		patterns: [{
+			# Incremental assignment: =/
+			name: "keyword.operator.assignment.increment.abnf"
+			match: "=/"
+		},{
+			# Normal assignment: =
+			name: "keyword.operator.assignment.abnf"
+			match: "="
+		}]
+
+	# Line comment
+	comment:
+		name:  "comment.line.semicolon.abnf"
+		begin: ";"
+		end:   "$"
+		beginCaptures:
+			0: name: "punctuation.definition.comment.abnf"
+
+	# Preset rules
+	"core-rules":
+		name: "support.constant.reference.core-rule.abnf"
+		match: """(?x)
+			\\b
+			(ALPHA|BIT|CHAR|CRLF|CR|CTL|DIGIT|DQUOTE
+			|HEXDIG|HTAB|LF|LWSP|OCTET|SP|VCHAR|WSP)
+			\\b
+		"""
+	
+	# (Grouped tokens)
+	group:
+		name: "meta.group.abnf"
+		begin: "\\("
+		end:   "\\)"
+		beginCaptures: 0: name: "punctuation.definition.round.bracket.begin.abnf"
+		endCaptures:   0: name: "punctuation.definition.round.bracket.end.abnf"
+		patterns: [include: "#rhs"]
+	
+	
+	# [Optional tokens]
+	optional:
+		name: "meta.optional.abnf"
+		begin: "\\["
+		end:   "\\]"
+		beginCaptures: 0: name: "punctuation.definition.square.bracket.begin.abnf"
+		endCaptures:   0: name: "punctuation.definition.square.bracket.end.abnf"
+		patterns: [include: "#rhs"]
+	
+	
+	# Production rule
+	rule:
+		name:  "meta.ruleset.$2.abnf"
+		begin: "(?:^|\\G)(\\s*)([A-Za-z][-A-Za-z0-9]*)"
+		end:   "^(?!\\1\\s+\\S)|^(?=\\S)"
+		beginCaptures:
+			0: name: "meta.lhs.abnf"
+			1: name: "punctuation.whitespace.leading.abnf"
+			2: name: "entity.name.rule.identifier.abnf"
+		contentName: "meta.rhs.abnf"
+		patterns: [include: "#rhs"]
+
+
+	# Stuff matched at or after an assignment operator
+	rhs:
+		patterns: [
+			{include: "#assignment"}
+			{include: "#string"}
+			{include: "#terminal"}
+			{include: "#comment"}
+			{include: "#quantifier"}
+			{include: "#group"}
+			{include: "#optional"}
+			{include: "#core-rules"}
+			{include: "#reference"}
+			{match: "/", name: "keyword.operator.logical.or.alternation.pipe.abnf"}
+		]
+
+
+	# Repetition
+	quantifier:
+		name:  "meta.quantifier.abnf"
+		match: "([0-9]*)(\\*)"
+		captures:
+			1: name: "constant.numeric.decimal.integer.int.abnf"
+			2: name: "keyword.operator.logical.repetition.asterisk.star.abnf"
+
+
+	# Rule reference
+	reference:
+		name: "variable.parameter.argument.identifier.reference.abnf"
+		match: "[A-Za-z][-A-Za-z0-9]*"
+
+
+	# Literal text
+	string:
+		name: "string.quoted.double.abnf"
+		begin: '"'
+		end:   '"'
+		beginCaptures: 0: name: "punctuation.definition.string.begin.abnf"
+		endCaptures:   0: name: "punctuation.definition.string.end.abnf"
+
+
+	# Terminal characters
+	terminal:
+		patterns: [{
+			# Decimal codepoint
+			name:  "meta.terminal.numeric.decimal.abnf"
+			begin: "(%)(d|D)"
+			end:   "(?=$|[;()\\[\\]{}\\s])"
+			beginCaptures:
+				1: name: "punctuation.definition.terminal.percentage-sign.abnf"
+				2: name: "storage.type.modifier.radix.abnf"
+			patterns: [{
+				# Invalid codepoint
+				name:  "invalid.illegal.syntax.abnf"
+				match: "[0-9A-Fa-f]*[^-\\s0-9.;()\\[\\]{}][^-.;()\\[\\]{}]*"
+			},{
+				# Codepoint
+				name:  "constant.numeric.integer.int.decimal.abnf"
+				match: "[0-9]+"
+			},{
+				# Range
+				name:  "punctuation.separator.range.dash.hyphen.abnf"
+				match: "-"
+			},{
+				# Concatenation
+				name:  "keyword.operator.concatenation.abnf"
+				match: "\\."
+			}]
+		},{
+			# Hexadecimal codepoint
+			name:  "meta.terminal.numeric.hexadecimal.hex.abnf"
+			begin: "(%)(x|X)"
+			end:   "(?=$|[;()\\[\\]{}\\s])"
+			beginCaptures:
+				1: name: "punctuation.definition.terminal.percentage-sign.abnf"
+				2: name: "storage.type.modifier.radix.abnf"
+			patterns: [{
+				# Invalid codepoint
+				name:  "invalid.illegal.syntax.abnf"
+				match: "[0-9A-Fa-f]*[^-\\s0-9A-Fa-f.;()\\[\\]{}][^-.;()\\[\\]{}]*"
+			},{
+				# Codepoint
+				name:  "constant.numeric.integer.int.hexadecimal.hex.abnf"
+				match: "[0-9A-Fa-f]+"
+			},{
+				# Range
+				name:  "punctuation.separator.range.dash.hyphen.abnf"
+				match: "-"
+			},{
+				# Concatenation
+				name:  "keyword.operator.concatenation.abnf"
+				match: "\\."
+			}]
+		},{
+			# Binary codepoint
+			name:  "meta.terminal.numeric.binary.bin.abnf"
+			begin: "(%)(b|B)"
+			end:   "(?=$|[;()\\[\\]{}\\s])"
+			beginCaptures:
+				1: name: "punctuation.definition.terminal.percentage-sign.abnf"
+				2: name: "storage.type.modifier.radix.abnf"
+			patterns: [{
+				# Invalid codepoint
+				name:  "invalid.illegal.syntax.abnf"
+				match: "[0-1]*[^-\\s0-1.;()\\[\\]{}][^-.;()\\[\\]{}]*"
+			},{
+				# Codepoint
+				name:  "constant.numeric.integer.int.binary.bin.abnf"
+				match: "[0-1]+"
+			},{
+				# Range
+				name:  "punctuation.separator.range.dash.hyphen.abnf"
+				match: "-"
+			},{
+				# Concatenation
+				name:  "keyword.operator.concatenation.abnf"
+				match: "\\."
+			}]
+		}]
