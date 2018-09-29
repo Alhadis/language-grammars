@@ -11,3 +11,9 @@
 		commentStart: "(*"
 		commentEnd:   "*)"
 		increaseIndentPattern: "=\\s*$"
+
+".source.lex":
+	editor:
+		commentStart: "/*"
+		commentEnd:   "*/"
+		increaseIndentPattern: "{\\s*$"
