@@ -1,0 +1,7 @@
+{
+	"name": "language-grammars",
+	"version": "0.0.0",
+	"description": "Syntax highlighting for ABNF/BNF/EBNF, Yacc, and other language-related languages.",
+	"author": "John Gardner <gardnerjohng@gmail.com>",
+	"keywords": ["ABNF", "BNF", "EBNF", "Yacc", "Bison", "Grammars", "Flex", "Lex", "Augmented", "Backus-Naur", "ISO/IEC 14977"]
+}
