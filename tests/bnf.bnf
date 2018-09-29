@@ -18,4 +18,7 @@
 <rule-char>      ::= <letter> | <digit> | "-"
 
 ; Extensions
-<example> ::= <example>+
+<example>        ::=  <example>+
+<example>        ::=  <example>*
+<example>        ::= {<definition>}
+<example>        ::= [<definition>]

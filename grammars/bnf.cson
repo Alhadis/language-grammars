@@ -7,17 +7,26 @@ repository:
 	main:
 		patterns: [
 			{include: "#rule"}
+			{include: "#comment"}
 		]
+	
+	
+	comment:
+		name:  "comment.line.semicolon.bnf"
+		begin: ";"
+		end:   "$"
+		beginCaptures:
+			0: name: "punctuation.definition.comment.bnf"
 	
 	rule:
 		name:  "meta.rule.bnf"
 		begin: "(?=<)"
-		end:   "$"
+		end:   "$|(?=;)"
 		patterns: [{
 			# Term/rule name
 			name:  "meta.lhs.bnf"
 			begin: "\\G<"
-			end:   ">|(?=$)"
+			end:   ">|(?=$|;)"
 			contentName: "entity.name.rule.identifier.bnf"
 			beginCaptures: 0: name: "punctuation.definition.angle.bracket.begin.bnf"
 			endCaptures:   0: name: "punctuation.definition.angle.bracket.end.bnf"
@@ -25,7 +34,7 @@ repository:
 			# Definition
 			name:  "meta.rhs.bnf"
 			begin: "::="
-			end:   "(?=$)"
+			end:   "(?=$|;)"
 			beginCaptures:
 				0: name: "keyword.operator.assignment.bnf"
 			patterns: [include: "#rhs"]
@@ -38,9 +47,13 @@ repository:
 			name: "keyword.operator.logical.or.alternation.pipe.bnf"
 			match: "\\|"
 		},{
-			# Repetition (>= 1)
-			name: "keyword.operator.logical.repetition.asterisk.star.ebnf"
+			# Repetition: 0 or more
+			name: "keyword.operator.logical.repetition.asterisk.star.bnf"
 			match: "\\*"
+		},{
+			# Repetition: 1 or more
+			name: "keyword.operator.logical.repetition.plus.bnf"
+			match: "\\+"
 		},{
 			# [ Optional ]
 			name:  "meta.optional.bnf"
