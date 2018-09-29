@@ -71,6 +71,14 @@ repository:
 			endCaptures:   0: name: "punctuation.definition.curly.bracket.end.bnf"
 			patterns: [include: "#rhs"]
 		},{
+			# ( Grouping )
+			name: "meta.group.bnf"
+			begin: "\\("
+			end:   "\\)"
+			beginCaptures: 0: name: "punctuation.definition.round.bracket.begin.bnf"
+			endCaptures:   0: name: "punctuation.definition.round.bracket.end.bnf"
+			patterns: [include: "#rhs"]
+		},{
 			# Term reference
 			name:  "meta.lhs.bnf"
 			begin: "<"

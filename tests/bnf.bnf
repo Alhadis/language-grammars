@@ -22,3 +22,4 @@
 <example>        ::=  <example>*
 <example>        ::= {<definition>}
 <example>        ::= [<definition>]
+<example>        ::= (<example1> | <example2>)
