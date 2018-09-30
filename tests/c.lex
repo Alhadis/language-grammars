@@ -17,7 +17,8 @@ void count();
 
 %%
 "/*"			{ comment(); }
-
+[ \t]+			putchar( ' ' );
+[ \t]+$			/* ignore this token */
 "auto"			{ count(); return(AUTO); }
 "break"			{ count(); return(BREAK); }
 "case"			{ count(); return(CASE); }

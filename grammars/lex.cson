@@ -6,9 +6,9 @@ patterns: [include: "#main"]
 repository:
 	main:
 		patterns: [
-			{include: "#comment"}
 			{include: "#definitions"}
 			{include: "#rules"}
+			{include: "source.cpp"}
 		]
 	
 	# Multi-line comment regions
@@ -23,20 +23,27 @@ repository:
 	# Initial grammar section
 	definitions:
 		name:  "meta.definitions.lex"
-		begin: "\\A"
-		end:   "^(?=%%)"
+		begin: "\\A(?!\\s*%%)"
+		end:   "^(?=\\s*%%)"
+		patterns: [
+			{include: "#comment"}
+			{include: "#option"}
+			{include: "#passthrough"}
+			{include: "#definition"}
+		]
+	
+	# Individual definition
+	definition:
+		name:  "meta.definition.lex"
+		begin: "^\\s*([A-Za-z_][A-Za-z0-9_-]*)"
+		end:   "$"
+		beginCaptures:
+			1: name: "entity.name.definition.lex"
 		patterns: [{
-			name:  "meta.definition.lex"
-			begin: "^\\s*([A-Za-z_][A-Za-z0-9_-]*)"
-			end:   "$"
-			beginCaptures:
-				1: name: "entity.name.definition.lex"
-			patterns: [{
-				name:  "meta.pattern.lex"
-				match: "(?<=\\s)\\S.*"
-				captures:
-					0: patterns: [include: "#regexp"]
-			}]
+			name:  "meta.pattern.lex"
+			match: "(?<=\\s)\\S.*"
+			captures:
+				0: patterns: [include: "#regexp"]
 		}]
 	
 	
@@ -48,6 +55,29 @@ repository:
 			1: name: "punctuation.definition.expansion.bracket.curly.begin.lex"
 			2: name: "variable.parameter.reference.lex"
 			3: name: "punctuation.definition.expansion.bracket.curly.end.lex"
+	
+	# `%option' directive
+	option:
+		name:  "meta.options.lex"
+		begin: "^\\s*((%)option)"
+		end:   "(?=$)"
+		captures:
+			1: name: "keyword.control.directive.option.lex"
+			2: name: "punctuation.definition.directive.lex"
+		patterns: [
+			{include: "#comment"}
+			{match: "\\S+", name: "constant.language.option.lex"}
+		]
+	
+	
+	# Chunk of text copied verbatim to output
+	passthrough:
+		name:  "meta.code-chunk.lex"
+		begin: "^%{"
+		end:   "^%}"
+		beginCaptures: 0: name: "punctuation.section.embedded.begin.lex"
+		endCaptures:   0: name: "punctuation.section.embedded.end.lex"
+		patterns: [include: "source.cpp"]
 	
 	
 	# Flex-flavoured regular expressions
@@ -124,21 +154,7 @@ repository:
 				6: name: "keyword.operator.quantifier.max.lex"
 				7: name: "punctuation.definition.quantifier.bracket.curly.end.lex"
 		},{
-			# Character class: [^xyz]
-			name:  "meta.character-class.set.lex"
-			begin: "(\\[)(\\^)?(-)?"
-			end:   "\\]"
-			beginCaptures:
-				1: name: "punctuation.definition.character-class.set.begin.lex"
-				2: name: "keyword.operator.logical.not.lex"
-				3: name: "constant.single.character.character-class.lex"
-			endCaptures:
-				0: name: "punctuation.definition.character-class.set.end.lex"
-			patterns: [
-				{include: "#regexp.escapes"}
-				{include: "#regexp.expressions"}
-				{match: "-(?!\\])", name: "punctuation.separator.range.dash.lex"}
-				{match: ".",        name: "constant.single.character.character-class.lex"}]
+			include: "#regexp.class"
 		},{
 			# Subpattern: (xyz)
 			name:  "meta.group.regexp"
@@ -148,6 +164,23 @@ repository:
 			endCaptures:   0: name: "punctuation.definition.group.end.lex"
 			patterns: [include: "#regexp"]
 		}, include: "#regexp.escapes"]
+
+	# Character class: [^xyz]
+	"regexp.class":
+		name:  "meta.character-class.set.lex"
+		begin: "(\\[)(\\^)?(-)?"
+		end:   "\\]"
+		beginCaptures:
+			1: name: "punctuation.definition.character-class.set.begin.lex"
+			2: name: "keyword.operator.logical.not.lex"
+			3: name: "constant.single.character.character-class.lex"
+		endCaptures:
+			0: name: "punctuation.definition.character-class.set.end.lex"
+		patterns: [
+			{include: "#regexp.escapes"}
+			{include: "#regexp.expressions"}
+			{match: "-(?!\\])", name: "punctuation.separator.range.dash.lex"}
+			{match: ".",        name: "constant.single.character.character-class.lex"}]
 
 	# Escape sequences used in regular expressions
 	"regexp.escapes":
@@ -180,10 +213,47 @@ repository:
 
 	# Second grammar section
 	rules:
-		begin: "^\\s*(%%)"
-		end:   "^\\s*(%%)"
+		begin: "^\\s*(%%)\\s*$\\s*"
+		end:   "^\\s*(%%)\\s*$\\s*"
 		beginCaptures:
 			1: name: "keyword.control.section.begin.lex"
 		endCaptures:
 			1: name: "keyword.control.section.end.lex"
-		patterns: []
+		patterns: [
+			{include: "#passthrough"}
+			{include: "#rule.pattern"}
+			{include: "#rule.action"}
+		]
+
+	"rule.pattern":
+		name:  "meta.pattern.lex"
+		begin: "(?<=^|\\n)(?=\\S)"
+		end:   "(?=\\s|$)"
+		patterns: [include: "#regexp"]
+	
+	# Wrapper for embedded C/C++ blocks.
+	# Patterns are handled carefully to avoid runaway issues.
+	"rule.action":
+		name:  "meta.action.lex"
+		begin: "(?<!^)(?=\\S)"
+		end:   "(?=\\s*$|^)"
+		patterns: [{
+			# { Block }
+			begin: "(?={)"
+			end:   "(?<=})"
+			patterns: [include: "source.cpp"]
+		},{
+			# Plain C string (one-line only)
+			match: "([^{\\s][^{]*?)\\s*$"
+			captures:
+				1: patterns: [include: "source.cpp"]
+		}]
+
+
+	# Arbitrary code tacked onto the end of the grammar
+	"user-code":
+		name:  "meta.user-code.lex"
+		begin: "(?<=^%%|\\s%%)"
+		end:   "(?=A)B" # Remainder of document
+		contentName: "source.embedded.cpp"
+		patterns: [include: "source.cpp"]
