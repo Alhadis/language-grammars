@@ -7,28 +7,39 @@ repository:
 	main:
 		patterns: [
 			{include: "#jlex"}
+			{include: "#comments"}
 			{include: "#definitions"}
 			{include: "#rules"}
 			{include: "source.cpp"}
 		]
 	
-	# Multi-line comment regions
-	comment:
-		name:  "comment.block.lex"
-		begin: "/\\*"
-		end:   "\\*/"
-		beginCaptures: 0: name: "punctuation.definition.begin.comment.lex"
-		endCaptures:   0: name: "punctuation.definition.end.comment.lex"
+	
+	comments:
+		patterns: [{
+			# Multi-line comment regions
+			name:  "comment.block.lex"
+			begin: "/\\*"
+			end:   "\\*/"
+			beginCaptures: 0: name: "punctuation.definition.begin.comment.lex"
+			endCaptures:   0: name: "punctuation.definition.end.comment.lex"
+		},{
+			# Single-line comments (C++ and Java only)
+			name:  "comment.line.double-slash.lex"
+			begin: "//"
+			end:   "(?=$)"
+			beginCaptures:
+				0: name: "punctuation.definition.comment.lex"
+		}]
 
 
 	# Initial grammar section
 	definitions:
 		name:  "meta.definitions.lex"
 		begin: "\\A(?!\\s*%%)"
-		end:   "^(?=\\s*(?:%%|import\\s+java\\.))"
+		end:   "^(?=\\s*(?:%%|(?:package|import)\\s+\\w))"
 		patterns: [
-			{include: "#comment"}
-			{include: "#option"}
+			{include: "#comments"}
+			{include: "#directives"}
 			{include: "#passthrough"}
 			{include: "#definition"}
 		]
@@ -51,22 +62,22 @@ repository:
 	# Hack for JLex grammars (Java-flavoured Lex)
 	jlex:
 		name:  "meta.jlex.lex"
-		begin: "^(?=\\s*import\\s+java\\.)"
-		end:   "(?=A)|B" # Swallow whole document
+		begin: "^(?=\\s*(?:package|import)\\s+\\w)"
+		end:   "(?=A)B" # Swallow whole document
 		patterns: [include: "source.jlex"]
 	
 	
-	# `%option' directive
-	option:
-		name:  "meta.options.lex"
-		begin: "^\\s*((%)option)"
+	# Directives of the form `%option', etc
+	directives:
+		name:  "meta.directive.lex"
+		begin: "^\\s*((%)\\w+)(?=\\s|$)"
 		end:   "(?=$)"
 		captures:
-			1: name: "keyword.control.directive.option.lex"
+			1: name: "keyword.control.directive.lex"
 			2: name: "punctuation.definition.directive.lex"
 		patterns: [
-			{include: "#comment"}
-			{match: "\\S+", name: "constant.language.option.lex"}
+			{include: "#comments"}
+			{match: "\\S+", name: "constant.language.other.lex"}
 		]
 	
 	
@@ -82,8 +93,8 @@ repository:
 	
 	# Second grammar section
 	rules:
-		begin: "^\\s*(%%)\\s*$\\s*"
-		end:   "^\\s*(%%)\\s*$\\s*"
+		begin: "^\\s*(%%)\\s*(?:$\\s*|(?=/\\*))"
+		end:   "^\\s*(%%)\\s*(?:$\\s*|(?=/\\*))"
 		beginCaptures: 1: name: "keyword.control.section.begin.lex"
 		endCaptures:   1: name: "keyword.control.section.end.lex"
 		patterns: [
@@ -105,6 +116,8 @@ repository:
 		begin: "(?<!^)(?=\\S)"
 		end:   "(?=\\s*$|^)"
 		patterns: [{
+			include: "#comments"
+		},{
 			# { Block }
 			begin: "(?={)"
 			end:   "(?<=})"

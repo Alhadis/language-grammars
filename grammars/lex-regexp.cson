@@ -15,6 +15,7 @@ repository:
 			{include: "#expansion"}
 			{include: "#quantifier-range"}
 			{include: "#class"}
+			{include: "#subpattern"}
 			{include: "#escapes"}
 		]
 
