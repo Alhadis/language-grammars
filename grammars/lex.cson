@@ -6,6 +6,7 @@ patterns: [include: "#main"]
 repository:
 	main:
 		patterns: [
+			{include: "#jlex"}
 			{include: "#definitions"}
 			{include: "#rules"}
 			{include: "source.cpp"}
@@ -24,7 +25,7 @@ repository:
 	definitions:
 		name:  "meta.definitions.lex"
 		begin: "\\A(?!\\s*%%)"
-		end:   "^(?=\\s*%%)"
+		end:   "^(?=\\s*(?:%%|import\\s+java\\.))"
 		patterns: [
 			{include: "#comment"}
 			{include: "#option"}
@@ -43,18 +44,17 @@ repository:
 			name:  "meta.pattern.lex"
 			match: "(?<=\\s)\\S.*"
 			captures:
-				0: patterns: [include: "#regexp"]
+				0: patterns: [include: "source.lex.regexp"]
 		}]
 	
 	
-	# Definition expansion
-	expansion:
-		name:  "meta.expansion.lex"
-		match: "(\\{)([^{}\\s]+)(\\})"
-		captures:
-			1: name: "punctuation.definition.expansion.bracket.curly.begin.lex"
-			2: name: "variable.parameter.reference.lex"
-			3: name: "punctuation.definition.expansion.bracket.curly.end.lex"
+	# Hack for JLex grammars (Java-flavoured Lex)
+	jlex:
+		name:  "meta.jlex.lex"
+		begin: "^(?=\\s*import\\s+java\\.)"
+		end:   "(?=A)|B" # Swallow whole document
+		patterns: [include: "source.jlex"]
+	
 	
 	# `%option' directive
 	option:
@@ -80,145 +80,12 @@ repository:
 		patterns: [include: "source.cpp"]
 	
 	
-	# Flex-flavoured regular expressions
-	regexp:
-		patterns: [{
-			# Wildcard: .
-			name:  "constant.character.wildcard.dot.match.any.lex"
-			match: "\\."
-		},{
-			# Alternation
-			name:  "keyword.operator.logical.or.lex"
-			match: "\\|"
-		},{
-			# Lookahead, or something like it
-			name:  "keyword.operator.logical.and.lookahead.lex"
-			match: "/"
-		},{
-			# Anchor: start-of-line
-			name:  "keyword.control.anchor.line-start.lex"
-			match: "\\^"
-		},{
-			# Anchor: end-of-line
-			name:  "keyword.control.anchor.line-end.lex"
-			match: "\\$"
-		},{
-			# Anchor: end-of-file
-			name:  "keyword.control.anchor.eof.lex"
-			match: "(<<)EOF(>>)"
-			captures:
-				1: name: "punctuation.definition.angle.bracket.begin.lex"
-				2: name: "punctuation.definition.angle.bracket.end.lex"
-		},{
-			# Start condition
-			name:  "meta.start-condition.lex"
-			begin: "<"
-			end:   ">|(?=$)"
-			beginCaptures: 0: name: "punctuation.definition.angle.bracket.begin.lex"
-			endCaptures:   0: name: "punctuation.definition.angle.bracket.end.lex"
-			patterns: [{
-				name:  "keyword.operator.wildcard.condition.lex"
-				match: "\\*"
-			},{
-				name:  "punctuation.delimiter.separator.comma.lex"
-				match: ","
-			},{
-				name: "constant.language.condition.name.lex"
-				match: "[^<>*,\\s]+"
-			}]
-		},{
-			# Quantifier
-			name: "keyword.operator.quantifier.lex"
-			match: "[*+?]"
-		},{
-			# Literal string
-			name:  "string.quoted.double.lex"
-			begin: '"'
-			end:   '"'
-			beginCaptures: 0: name: "punctuation.definition.string.begin.lex"
-			endCaptures:   0: name: "punctuation.definition.string.end.lex"
-			patterns: [include: "#regexp.escapes"]
-		},{
-			# Definition expansion
-			include: "#expansion"
-		},{
-			# Quantifier (specific range)
-			name: "keyword.operator.quantifier.specific.lex"
-			match: "({)(?:([0-9]+)(?:(,)([0-9]*))?|(,)([0-9]+))(})"
-			captures:
-				1: name: "punctuation.definition.quantifier.bracket.curly.begin.lex"
-				2: name: "keyword.operator.quantifier.min.lex"
-				3: name: "punctuation.delimiter.comma.lex"
-				4: name: "keyword.operator.quantifier.max.lex"
-				5: name: "punctuation.delimiter.comma.lex"
-				6: name: "keyword.operator.quantifier.max.lex"
-				7: name: "punctuation.definition.quantifier.bracket.curly.end.lex"
-		},{
-			include: "#regexp.class"
-		},{
-			# Subpattern: (xyz)
-			name:  "meta.group.regexp"
-			begin: "\\("
-			end:   "\\)"
-			beginCaptures: 0: name: "punctuation.definition.group.begin.lex"
-			endCaptures:   0: name: "punctuation.definition.group.end.lex"
-			patterns: [include: "#regexp"]
-		}, include: "#regexp.escapes"]
-
-	# Character class: [^xyz]
-	"regexp.class":
-		name:  "meta.character-class.set.lex"
-		begin: "(\\[)(\\^)?(-)?"
-		end:   "\\]"
-		beginCaptures:
-			1: name: "punctuation.definition.character-class.set.begin.lex"
-			2: name: "keyword.operator.logical.not.lex"
-			3: name: "constant.single.character.character-class.lex"
-		endCaptures:
-			0: name: "punctuation.definition.character-class.set.end.lex"
-		patterns: [
-			{include: "#regexp.escapes"}
-			{include: "#regexp.expressions"}
-			{match: "-(?!\\])", name: "punctuation.separator.range.dash.lex"}
-			{match: ".",        name: "constant.single.character.character-class.lex"}]
-
-	# Escape sequences used in regular expressions
-	"regexp.escapes":
-		patterns: [{
-			name: "constant.character.escape.codepoint.octal.lex"
-			match: "\\\\[0-7]{3}"
-		},{
-			name: "constant.character.escape.codepoint.hexadecimal.hex.lex"
-			match: "\\\\[xX][A-Fa-f0-9]{2}"
-		},{
-			name: "constant.character.escape.lex"
-			match: "\\\\."
-		}]
-
-
-	# Character class "expression" (POSIX character class)
-	"regexp.expressions":
-		name: "constant.language.posix.$2-char.character-class.lex"
-		match: """(?x)
-			(\\[:)
-			(alnum|alpha|blank|cntrl|digit|graph
-			|lower|print|punct|space|upper|xdigit)
-			(:\\])
-		"""
-		captures:
-			1: name: "punctuation.definition.character-class.set.begin.lex"
-			2: name: "support.constant.posix-class.lex"
-			3: name: "punctuation.definition.character-class.set.end.lex"
-
-
 	# Second grammar section
 	rules:
 		begin: "^\\s*(%%)\\s*$\\s*"
 		end:   "^\\s*(%%)\\s*$\\s*"
-		beginCaptures:
-			1: name: "keyword.control.section.begin.lex"
-		endCaptures:
-			1: name: "keyword.control.section.end.lex"
+		beginCaptures: 1: name: "keyword.control.section.begin.lex"
+		endCaptures:   1: name: "keyword.control.section.end.lex"
 		patterns: [
 			{include: "#passthrough"}
 			{include: "#rule.pattern"}
@@ -229,7 +96,7 @@ repository:
 		name:  "meta.pattern.lex"
 		begin: "(?<=^|\\n)(?=\\S)"
 		end:   "(?=\\s|$)"
-		patterns: [include: "#regexp"]
+		patterns: [include: "source.lex.regexp"]
 	
 	# Wrapper for embedded C/C++ blocks.
 	# Patterns are handled carefully to avoid runaway issues.
