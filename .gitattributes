@@ -1,0 +1,2 @@
+# Prevent test fixtures from skewing language stats
+tests/* linguist-documentation=true
