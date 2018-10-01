@@ -1,0 +1,145 @@
+name: "Yacc/Bison"
+scopeName: "source.yacc"
+fileTypes: ["bison", "y", "yy", "yacc"]
+patterns: [include: "#main"]
+
+repository:
+	main:
+		patterns: [
+			{include: "#comment"}
+			{
+				name: "punctuation.section.embedded.begin.yacc"
+				match: "^\\s*(%{)"
+			}
+			{
+				name: "punctuation.section.embedded.end.yacc"
+				match: "^\\s*(%})"
+			}
+			{include: "#declaration-section"}
+			{include: "#rules"}
+			{include: "#epilogue"}
+			{include: "source.cpp"}
+		]
+	
+	
+	# Block comment
+	comment:
+		name:  "comment.block.yacc"
+		begin: "/\\*"
+		end:   "\\*/"
+		beginCaptures: 0: name: "punctuation.definition.comment.begin.yacc"
+		endCaptures:   0: name: "punctuation.definition.comment.end.yacc"
+
+	
+	# Constant
+	constant:
+		name: "constant.language.other.token.yacc"
+		match: "\\w+"
+
+
+	"data-type":
+		name:  "storage.modifier.type.yacc"
+		begin: "<"
+		end:   ">"
+		beginCaptures: 0: name: "punctuation.definition.angle.bracket.begin.yacc"
+		endCaptures:   0: name: "punctuation.definition.angle.bracket.end.yacc"
+
+
+	# Bison declarations
+	"declaration-section":
+		name:  "meta.declarations.yacc"
+		begin: "(?<=%})"
+		end:   "^(?=\\s*%%)"
+		patterns: [
+			{include: "#declarations"}
+			{include: "#comment"}
+		]
+
+	# Individual declarations
+	declarations:
+		patterns: [{
+			# %union { … }
+			begin: "^\\s*((%)union)\\b"
+			end:   "^(?=\\s*%)|(?<=})"
+			beginCaptures:
+				1: name: "keyword.control.directive.union.yacc"
+				2: name: "punctuation.definition.token.percentage-sign.yacc"
+			patterns: [include: "source.cpp"]
+		},{
+			# %code imports { …Java… }
+			name:  "meta.code-block.yacc"
+			begin: "^\\s*((%)code)\\s+(imports)\\s*({)"
+			end:   "}"
+			beginCaptures:
+				1: name: "keyword.control.directive.code.yacc"
+				2: name: "punctuation.definition.token.percentage-sign.yacc"
+				3: name: "constant.language.other.qualifier.yacc"
+				4: name: "punctuation.definition.curly.bracket.begin.yacc"
+			endCaptures:
+				0: name: "punctuation.definition.curly.bracket.end.yacc"
+			patterns: [include: "source.java"]
+		},{
+			# %code [qualifier] { … }
+			name:  "meta.code-block.yacc"
+			begin: "^\\s*((%)code)(?:\\s+(\\w+))?\\s*({)"
+			end:   "}"
+			beginCaptures:
+				1: name: "keyword.control.directive.code.yacc"
+				2: name: "punctuation.definition.token.percentage-sign.yacc"
+				3: name: "constant.language.other.qualifier.yacc"
+				4: name: "punctuation.definition.curly.bracket.begin.yacc"
+			endCaptures:
+				0: name: "punctuation.definition.curly.bracket.end.yacc"
+			patterns: [include: "source.cpp"]
+		},{
+			# %foo BAR BAZ …
+			begin: "^\\s*((%)(nonassoc|token|type|left|right|start|expect|code))\\b"
+			end:   "(?=$)"
+			beginCaptures:
+				1: name: "keyword.control.directive.$3.yacc"
+				2: name: "punctuation.definition.token.percentage-sign.yacc"
+			patterns: [include: "#declaration-innards"]
+		}]
+
+	# Stuff that follows something that quacks like `%this`
+	"declaration-innards":
+		patterns: [
+			{include: "#constant"}
+			{include: "#comment"}
+			{include: "#string"}
+			{include: "#data-type"}
+		]
+
+
+	# Epilogue
+	epilogue:
+		name:  "meta.epilogue.yacc"
+		begin: "(?<=%%)"
+		end:   "(?=A)B" # Slurp to end-of-file
+		patterns: [include: "source.cpp"]
+
+
+	# Grammar rules
+	rules:
+		name:  "meta.rules.yacc"
+		begin: "^\\s*(%%)"
+		end:   "^\\s*(%%)"
+		beginCaptures: 1: name: "keyword.control.section.begin.yacc"
+		endCaptures:   1: name: "keyword.control.section.end.yacc"
+		
+	
+	# Quoted string literals
+	string:
+		patterns: [{
+			name:  "string.quoted.double.yacc"
+			begin: '"'
+			end:   '"'
+			beginCaptures: 0: name: "punctuation.definition.string.begin.yacc"
+			endCaptures:   0: name: "punctuation.definition.string.end.yacc"
+		},{
+			name:  "string.quoted.single.yacc"
+			begin: "'"
+			end:   "'"
+			beginCaptures: 0: name: "punctuation.definition.string.begin.yacc"
+			endCaptures:   0: name: "punctuation.definition.string.end.yacc"
+		}]
