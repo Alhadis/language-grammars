@@ -7,14 +7,7 @@ repository:
 	main:
 		patterns: [
 			{include: "#comment"}
-			{
-				name: "punctuation.section.embedded.begin.yacc"
-				match: "^\\s*(%{)"
-			}
-			{
-				name: "punctuation.section.embedded.end.yacc"
-				match: "^\\s*(%})"
-			}
+			{include: "#prologue"}
 			{include: "#declaration-section"}
 			{include: "#rules"}
 			{include: "#epilogue"}
@@ -37,6 +30,7 @@ repository:
 		match: "\\w+"
 
 
+	# Something that looks `<like-this>'
 	"data-type":
 		name:  "storage.modifier.type.yacc"
 		begin: "<"
@@ -94,7 +88,7 @@ repository:
 		},{
 			# %foo BAR BAZ …
 			begin: "^\\s*((%)(nonassoc|token|type|left|right|start|expect|code))\\b"
-			end:   "(?=$)"
+			end:   "^(?!\\s{2,}(?=\\w))|^(?=\\s*%%)"
 			beginCaptures:
 				1: name: "keyword.control.directive.$3.yacc"
 				2: name: "punctuation.definition.token.percentage-sign.yacc"
@@ -117,6 +111,19 @@ repository:
 		begin: "(?<=%%)"
 		end:   "(?=A)B" # Slurp to end-of-file
 		patterns: [include: "source.cpp"]
+
+
+	# The C++ rules aren't being embedded within a `begin/end`
+	# block like we usually would, due to strange flaky highlighting
+	# that presumably stems from the C++ grammar's use of `$base`.
+	prologue:
+		patterns: [{
+			name: "punctuation.section.embedded.begin.yacc"
+			match: "^\\s*(%{)"
+		},{
+			name: "punctuation.section.embedded.end.yacc"
+			match: "^\\s*(%})"
+		}, include: "#declarations"]
 
 
 	# Grammar rules
