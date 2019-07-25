@@ -15,6 +15,130 @@ repository:
 		]
 	
 	
+	# Braced C/C++ code
+	action:
+		patterns: [{
+			# %?{ … }
+			name:  "meta.predicate.yacc"
+			begin: "(%\\?)({)"
+			end:   "}"
+			beginCaptures:
+				1: name: "keyword.operator.predicate.action.yacc"
+				2: name: "punctuation.section.block.begin.bracket.curly.c"
+			endCaptures:
+				0: name: "punctuation.section.block.end.bracket.curly.c"
+			patterns: [include: "#action-innards"]
+		},{
+			# { … }
+			name:  "meta.action.yacc"
+			begin: "{"
+			end:   "}"
+			beginCaptures: 0: name: "punctuation.section.block.begin.bracket.curly.c"
+			endCaptures:   0: name: "punctuation.section.block.end.bracket.curly.c"
+			patterns: [include: "#action-innards"]
+		}]
+	
+	
+	# Stuff matched inside a braced action block
+	"action-innards":
+		patterns: [
+			# Balanced braces
+			begin: "{"
+			end:   "}"
+			beginCaptures: 0: name: "punctuation.section.block.begin.bracket.curly.c"
+			endCaptures:   0: name: "punctuation.section.block.end.bracket.curly.c"
+			patterns: [include: "#action-innards"]
+			
+			{include: "#action-vars"}
+			{include: "#bison-defs"}
+			{include: "source.cpp"}
+		]
+	
+	
+	# Predefined variables matched inside action blocks
+	"action-vars":
+		patterns: [{
+			# $undefined, $accept, $end - Predefined symbols
+			name: "constant.language.predefined-symbol.$2.yacc"
+			match: "(\\$)(undefined|accept|end)(?![-.])\\b"
+			captures:
+				1: name: "punctuation.definition.symbol.yacc"
+		},{
+			# `error` - Placeholder error token
+			name: "constant.language.predefined-symbol.error.yacc"
+			match: "(?<![-.$])\\b(error)(?![-.])\\b"
+		},{
+			# $@n - 𝑁-th midrule action symbol
+			name: "variable.language.midrule-action-symbol.$2.nth.yacc"
+			match: "(\\$@)([0-9]+)"
+			captures:
+				1: name: "punctuation.definition.variable.yacc"
+		},{
+			# @$ - Location of left-hand side of rule
+			name: "variable.language.rule-location.lhs.yacc"
+			match: "(@)\\$"
+			captures:
+				1: name: "punctuation.definition.variable.yacc"
+		},{
+			# @n - Location of 𝑁-th symbol in right-hand side of rule
+			name: "variable.language.positional.rule-location.rhs.$2.yacc.yacc"
+			match: "(@)([0-9]+)"
+			captures:
+				1: name: "punctuation.definition.variable.yacc"
+		},{
+			# $$ - Semantic value of left-hand side of rule
+			name: "variable.language.rule-value.lhs.yacc"
+			match: "(\\$)\\$"
+			captures:
+				1: name: "punctuation.definition.variable.yacc"
+		},{
+			# $n - Semantic value of 𝑁-th symbol in right-hand side of rule
+			name: "variable.language.positional.rule-value.rhs.$2.yacc.yacc"
+			match: "(\\$)([0-9]+)"
+			captures:
+				1: name: "punctuation.definition.variable.yacc"
+		},{
+			# @name, @[name] - Symbol location addressed by `name`
+			name: "variable.language.symbol-location.yacc"
+			match: "(@)[A-Za-z_.][-.\\w]*|(@)(\\[)\\s*[A-Za-z_.][-.\\w]*\\s*(\\])"
+			captures:
+				1: name: "punctuation.definition.variable.yacc"
+				2: name: "punctuation.definition.variable.yacc"
+				3: name: "punctuation.section.begin.brace.bracket.square.yacc"
+				4: name: "punctuation.section.end.bbrace.racket.square.yacc"
+		},{
+			# $name, $[name] - Symbol value addressed by `name`
+			name: "variable.language.symbol-value.yacc"
+			match: "(\\$)[A-Za-z_.][-.\\w]*|(\\$\\[)\\s*[A-Za-z_.][-.\\w]*\\s*(\\])"
+			captures:
+				1: name: "punctuation.definition.variable.yacc"
+				2: name: "punctuation.definition.variable.begin.yacc"
+				3: name: "punctuation.definition.variable.end.yacc"
+		}]
+
+
+	# Stuff defined or provided by Yacc/Bison
+	"bison-defs":
+		patterns: [{
+			# Macros/functions
+			name: "support.function.$1.yacc"
+			match: """(?x) (?<![.-]) \\b
+				(YYABORT|YYACCEPT|YYBACKUP|YYDEBUG|YYERROR_VERBOSE|YYERROR|YYFPRINTF|YYINITDEPTH
+				|YYMAXDEPTH|YYPRINT|YYRECOVERING|YYSTACK_USE_ALLOCA|yyerrok|yyerror|yylex|yyparse
+				|yypstate_delete|yypstate_new|yypull_parse|yypush_parse)
+				\\b (?![.-])
+			"""
+		},{
+			# Variables
+			name: "support.variable.$1.yacc"
+			match: "(?<![.-])\\b(yychar|yyclearin|yydebug|yylloc|yylval|yynerrs)\\b(?![.-])"
+		},{
+			# Types
+			name: "support.type.$1.yacc"
+			match: "(?<![.-])\\b(YYSTYPE|YYLTYPE)\\b(?![.-])"
+		}]
+	
+	
 	# Block comment
 	comment:
 		name:  "comment.block.yacc"
@@ -32,11 +156,22 @@ repository:
 
 	# Something that looks `<like-this>'
 	"data-type":
-		name:  "storage.modifier.type.yacc"
-		begin: "<"
-		end:   ">"
-		beginCaptures: 0: name: "punctuation.definition.angle.bracket.begin.yacc"
-		endCaptures:   0: name: "punctuation.definition.angle.bracket.end.yacc"
+		patterns: [{
+			# <*>
+			name:  "storage.modifier.type.yacc"
+			match: "(<)(\\*)(>)"
+			captures:
+				1: name: "punctuation.definition.angle.bracket.begin.yacc"
+				2: name: "constant.language.default.yacc"
+				3: name: "punctuation.definition.angle.bracket.end.yacc"
+		},{
+			# < … >
+			name:  "storage.modifier.type.yacc"
+			begin: "<"
+			end:   ">"
+			beginCaptures: 0: name: "punctuation.definition.angle.bracket.begin.yacc"
+			endCaptures:   0: name: "punctuation.definition.angle.bracket.end.yacc"
+		}]
 
 
 	# Bison declarations
@@ -47,6 +182,7 @@ repository:
 		patterns: [
 			{include: "#declarations"}
 			{include: "#comment"}
+			{include: "#data-type"}
 		]
 
 	# Individual declarations
@@ -74,25 +210,79 @@ repository:
 			patterns: [include: "source.java"]
 		},{
 			# %code [qualifier] { … }
-			name:  "meta.code-block.yacc"
-			begin: "^\\s*((%)code)(?:\\s+(\\w+))?\\s*({)"
+			name:  "meta.$3-block.yacc"
+			begin: "^\\s*((%)(code|lex-param|parse-param|param|printer))(?:\\s+(\\w+))?\\s*({)"
 			end:   "}"
 			beginCaptures:
-				1: name: "keyword.control.directive.code.yacc"
+				1: name: "keyword.control.directive.$3.yacc"
 				2: name: "punctuation.definition.token.percentage-sign.yacc"
-				3: name: "constant.language.other.qualifier.yacc"
+				4: name: "constant.language.other.qualifier.yacc"
+				5: name: "punctuation.definition.curly.bracket.begin.yacc"
+			endCaptures:
+				0: name: "punctuation.definition.curly.bracket.end.yacc"
+			patterns: [include: "source.cpp"]
+		},{
+			# %defines [defines-file]
+			name: "meta.defines.yacc"
+			match: "^\\s*((%)defines)(?=\\s|$|/\\*|//)(?:\\s+(?!//|/\\*)(\\S+))?"
+			captures:
+				1: name: "keyword.control.directive.defines.yacc"
+				2: name: "punctuation.definition.token.percentage-sign.yacc"
+				3: name: "string.unquoted.filename.yacc"
+		},{
+			# %define [variable] { … }
+			begin: "^\\s*((%)define)(?:\\s+([A-Za-z_.][-.\\w]*))?\\s*({)"
+			end:   "}"
+			beginCaptures:
+				1: name: "keyword.control.directive.define.yacc"
+				2: name: "punctuation.definition.token.percentage-sign.yacc"
+				3: name: "entity.name.var.yacc"
 				4: name: "punctuation.definition.curly.bracket.begin.yacc"
 			endCaptures:
 				0: name: "punctuation.definition.curly.bracket.end.yacc"
 			patterns: [include: "source.cpp"]
 		},{
+			# %define [variable] …
+			begin: "^\\s*((%)define)(?:\\s+([A-Za-z_.][-.\\w]*))?"
+			end:   "(?=\\s*$)|^(?!\\s{2,}(?=\\w))|^(?=\\s*%%)"
+			beginCaptures:
+				1: name: "keyword.control.directive.define.yacc"
+				2: name: "punctuation.definition.token.percentage-sign.yacc"
+				3: name: "entity.name.var.yacc"
+			patterns: [include: "#declaration-innards"]
+		},{
+			# %option [...names]
+			begin: "^\\s*((%)option)(?=\\s|$)"
+			end:   "$|(?=\\s*(?://|/\\*))|^(?=\\s*%%)"
+			beginCaptures:
+				1: name: "keyword.control.directive.option.yacc"
+				2: name: "punctuation.definition.token.percentage-sign.yacc"
+			patterns: [{
+				name: "constant.language.option-name.yacc"
+				match: "[A-Za-z_.][-.\\w]*"
+			}, include: "#declaration-innards"]
+		},{
 			# %foo BAR BAZ …
-			begin: "^\\s*((%)(nonassoc|token|type|left|right|start|expect|code))\\b"
-			end:   "^(?!\\s{2,}(?=\\w))|^(?=\\s*%%)"
+			begin: """(?x)
+				^\\s* ((%)
+				(code|debug|destructor|dprec|empty|error-verbose|expect-rr|expect
+				|file-prefix|glr-parser|initial-action|language|left|lex-param
+				|locations|merge|name-prefix|no-lines|nonassoc|nterm|output|param
+				|parse-param|precedence|prec|printer|pure-parser|required?|right|skeleton
+				|start|token-table|token|type|verbose|yacc))\\b
+			"""
+			end: "^(?!\\s{2,}(?=\\w))|^(?=\\s*%%)"
 			beginCaptures:
 				1: name: "keyword.control.directive.$3.yacc"
 				2: name: "punctuation.definition.token.percentage-sign.yacc"
 			patterns: [include: "#declaration-innards"]
+		},{
+			# %{ …More declarations… }
+			begin: "^\\s*(%{)"
+			end:   "^\\s*(%})"
+			beginCaptures: 1: name: "punctuation.section.embedded.begin.yacc"
+			endCaptures:   1: name: "punctuation.section.embedded.end.yacc"
+			patterns: [include: "source.cpp"]
 		}]
 
 	# Stuff that follows something that quacks like `%this`
@@ -133,6 +323,29 @@ repository:
 		end:   "^\\s*(%%)"
 		beginCaptures: 1: name: "keyword.control.section.begin.yacc"
 		endCaptures:   1: name: "keyword.control.section.end.yacc"
+		patterns: [
+			{include: "#comment"}
+			{include: "#rule"}
+		]
+	
+	
+	# Production rule
+	rule:
+		name:  "meta.rule.yacc"
+		begin: "^\\s*([A-Za-z_.][-.\\w]*)\\s*(:)"
+		end:   "\\s*(;)\\s*"
+		beginCaptures:
+			1: name: "entity.name.rule.yacc"
+			2: name: "punctuation.separator.key-value.colon.yacc"
+		endCaptures:
+			1: name: "punctuation.terminator.statement.semicolon.yacc"
+		patterns: [
+			{match: "([A-Za-z_.][-.\\w]*)", name: "entity.name.rule.yacc"}
+			{match: "\\|", name: "keyword.operator.logical.or.yacc"}
+			{include: "#comment"}
+			{include: "#string"}
+			{include: "#action"}
+		]
 		
 	
 	# Quoted string literals
