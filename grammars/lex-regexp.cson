@@ -148,7 +148,7 @@ repository:
 		end:   '"'
 		beginCaptures: 0: name: "punctuation.definition.string.begin.lex"
 		endCaptures:   0: name: "punctuation.definition.string.end.lex"
-		patterns: [include: "escapes"]
+		patterns: [include: "#escapes"]
 
 	# Subpattern: (xyz)
 	subpattern:
