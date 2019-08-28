@@ -1,2 +1,5 @@
+# Include CSON files in GitHub's language breakdown graph
+*.cson  linguist-detectable=true
+
 # Prevent test fixtures from skewing language stats
 tests/* linguist-documentation=true
