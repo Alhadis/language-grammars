@@ -1,7 +1,7 @@
 # Source: https://www.cs.princeton.edu/~appel/modern/java/JLex/current/manual.html
 name: "JLex"
 scopeName: "source.jlex"
-fileTypes: ["jlex"]
+fileTypes: ["jlex", "jflex"]
 patterns: [include: "#main"]
 
 repository:
