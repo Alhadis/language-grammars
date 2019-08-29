@@ -15,6 +15,3 @@ package-lock.json
 [._]s[a-v][a-z]
 [._]sw[a-p]
 /test.*
-
-# Project-specific
-/grammars/*.json

@@ -25,7 +25,7 @@ repository:
 			{include: "#declaration-section"}
 			{include: "#rules"}
 			{include: "#epilogue"}
-			{include: "source.c++"}
+			{include: "source.cpp"}
 		]
 	
 	
@@ -65,7 +65,7 @@ repository:
 			
 			{include: "#action-vars"}
 			{include: "#bison-defs"}
-			{include: "source.c++"}
+			{include: "source.cpp"}
 		]
 	
 	
@@ -208,7 +208,7 @@ repository:
 			beginCaptures:
 				1: name: "keyword.control.directive.union.yacc"
 				2: name: "punctuation.definition.token.percentage-sign.yacc"
-			patterns: [include: "source.c++"]
+			patterns: [include: "source.cpp"]
 		},{
 			# %code imports { …Java… }
 			name:  "meta.code-block.yacc"
@@ -234,7 +234,7 @@ repository:
 				5: name: "punctuation.definition.curly.bracket.begin.yacc"
 			endCaptures:
 				0: name: "punctuation.definition.curly.bracket.end.yacc"
-			patterns: [include: "source.c++"]
+			patterns: [include: "source.cpp"]
 		},{
 			# %defines [defines-file]
 			name: "meta.defines.yacc"
@@ -254,7 +254,7 @@ repository:
 				4: name: "punctuation.definition.curly.bracket.begin.yacc"
 			endCaptures:
 				0: name: "punctuation.definition.curly.bracket.end.yacc"
-			patterns: [include: "source.c++"]
+			patterns: [include: "source.cpp"]
 		},{
 			# %define [variable] …
 			begin: "^\\s*((%)define)(?:\\s+([A-Za-z_.][-.\\w]*))?"
@@ -296,7 +296,7 @@ repository:
 			end:   "^\\s*(%})"
 			beginCaptures: 1: name: "punctuation.section.embedded.begin.yacc"
 			endCaptures:   1: name: "punctuation.section.embedded.end.yacc"
-			patterns: [include: "source.c++"]
+			patterns: [include: "source.cpp"]
 		}]
 
 	# Stuff that follows something that quacks like `%this`
@@ -314,7 +314,7 @@ repository:
 		name:  "meta.epilogue.yacc"
 		begin: "(?<=%%)"
 		end:   "(?=A)B" # Slurp to end-of-file
-		patterns: [include: "source.c++"]
+		patterns: [include: "source.cpp"]
 
 
 	# The C++ rules aren't being embedded within a `begin/end`

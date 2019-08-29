@@ -24,7 +24,7 @@ repository:
 			{include: "#comments"}
 			{include: "#definitions"}
 			{include: "#rules"}
-			{include: "source.c++"}
+			{include: "source.cpp"}
 		]
 	
 	
@@ -102,7 +102,7 @@ repository:
 		end:   "^%}"
 		beginCaptures: 0: name: "punctuation.section.embedded.begin.lex"
 		endCaptures:   0: name: "punctuation.section.embedded.end.lex"
-		patterns: [include: "source.c++"]
+		patterns: [include: "source.cpp"]
 	
 	
 	# Second grammar section
@@ -135,12 +135,12 @@ repository:
 			# { Block }
 			begin: "(?={)"
 			end:   "(?<=})"
-			patterns: [include: "source.c++"]
+			patterns: [include: "source.cpp"]
 		},{
 			# Plain C string (one-line only)
 			match: "([^{\\s][^{]*?)\\s*$"
 			captures:
-				1: patterns: [include: "source.c++"]
+				1: patterns: [include: "source.cpp"]
 		}]
 
 
@@ -150,4 +150,4 @@ repository:
 		begin: "(?<=^%%|\\s%%)"
 		end:   "(?=A)B" # Remainder of document
 		contentName: "source.embedded.cpp"
-		patterns: [include: "source.c++"]
+		patterns: [include: "source.cpp"]
