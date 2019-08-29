@@ -1,4 +1,4 @@
-# Flex/JLex-flavoured regular expressions
+# Flex-flavoured regular expressions
 scopeName: "source.lex.regexp"
 patterns: [include: "#main"]
 

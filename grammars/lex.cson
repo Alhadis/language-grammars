@@ -20,7 +20,7 @@ firstLineMatch: """(?ix)
 repository:
 	main:
 		patterns: [
-			{include: "#jlex"}
+			{include: "#jflex"}
 			{include: "#comments"}
 			{include: "#definitions"}
 			{include: "#rules"}
@@ -73,12 +73,12 @@ repository:
 		}]
 	
 	
-	# Hack for JLex grammars (Java-flavoured Lex)
-	jlex:
-		name:  "meta.jlex.lex"
+	# Hack for JFlex grammars (Java-flavoured Lex)
+	jflex:
+		name:  "meta.jflex.lex"
 		begin: "^(?=\\s*(?:package|import)\\s+\\w)"
 		end:   "(?=A)B" # Swallow whole document
-		patterns: [include: "source.jlex"]
+		patterns: [include: "source.jflex"]
 	
 	
 	# Directives of the form `%option', etc

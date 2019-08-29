@@ -11,7 +11,6 @@ Supported formats
 *	[Augmented Backus-Naur Form][ABNF]
 *	[Backus-Naur Form][BNF]
 *	[Extended Backus-Naur Form][EBNF] ([ISO/IEC 14977][] + extensions)
-*	[JLex][] / [JFlex][]
 *	[Lex][]  / [Flex][]
 *	[Yacc][] / [Bison][]
 
@@ -38,8 +37,6 @@ Previews
 [BNF]:  https://en.wikipedia.org/wiki/Backus–Naur_form
 [EBNF]: https://en.wikipedia.org/wiki/Extended_Backus–Naur_form
 [ISO/IEC 14977]: http://www.cl.cam.ac.uk/~mgk25/iso-14977.pdf
-[JLex]:  http://pages.cs.wisc.edu/~fischer/cs536.s05/course.hold/html/NOTES/2a.JLEX.html
-[JFlex]: https://jflex.de/manual.html
 [Lex]:   https://en.wikipedia.org/wiki/Lex_(software)
 [Flex]:  https://en.wikipedia.org/wiki/Flex_(lexical_analyser_generator)
 [Yacc]:  https://en.wikipedia.org/wiki/Yacc
