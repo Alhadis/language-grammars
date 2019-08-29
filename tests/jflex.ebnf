@@ -1,0 +1,86 @@
+(* vim:set ts=4: -*- tab-width: 4 -*- *)
+(* Source: https://jflex.de/manual.html#Grammar *)
+
+(*
+	The syntax of the ‘lexical rules’ section is described by the following
+	EBNF grammar (terminal symbols are enclosed in ’quotes’):
+*)
+
+Digit ::=
+    "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+Letter ::=
+	"A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" |
+    "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" |
+    "U" | "V" | "W" | "X" | "Y" | "Z" |
+	"a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" |
+    "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" |
+    "u" | "v" | "w" | "x" | "y" | "z" ;
+MetaCharacter ::=
+	"|" | "(" | ")" | "{" | "}" | "[" | "]" | "<" | ">" | "\\"|
+    "." | "*" | "+" | "?" | "^" | "$" | "/" | "." | '"' | "~" |
+    "!" | "'" ;
+StringMetaCharacter ::=
+    "\\" | '"' ;
+
+Character       ::= Escape | !MetaCharacter ;
+StringCharacter ::= Escape | !StringMetaCharacter ;
+Identifier      ::= Letter (Letter|Digit|'_')*
+Number          ::= Digit+
+
+
+LexicalRules ::= !(Include|Rule)+
+Include      ::= '%include' (' '|'\t'|'\b')+ File
+Rule         ::= [StateList] ['^'] RegExp [LookAhead] Action 
+               | [StateList] '<<EOF>>' Action
+               | StateGroup 
+StateGroup   ::= StateList '{' Rule+ '}' 
+StateList    ::= '<' Identifier (',' Identifier)* '>' 
+LookAhead    ::= '$' | '/' RegExp
+Action       ::= '{' JavaCode '}' | '|'
+
+RegExp       ::= RegExp '|' RegExp 
+               | RegExp RegExp 
+               | '(' RegExp ')'
+               | ('!'|'~') RegExp
+               | RegExp ('*'|'+'|'?')
+               | RegExp "{" Number ["," Number] "}" 
+               | CharClass
+               | PredefinedClass 
+               | MacroUsage 
+               | '"' StringCharacter+ '"' 
+               | Character 
+
+CharClass    ::= '[' ['^'] CharClassContent* ']'
+               | '[' ['^'] CharClassContent+ 
+                     CharClassOperator CharClassContent+ ']'
+                 
+CharClassContent    ::= CharClass | Character |
+                        Character'-'Character | 
+                        MacroUsage | PredefinedClass
+
+CharClassOperator   ::= '||' | '&&' | '--' | '~~'
+
+MacroUsage          ::= '{' Identifier '}'
+
+PredefinedClass     ::= '[:jletter:]' 
+                      | '[:jletterdigit:]' 
+                      | '[:letter:]' 
+                      | '[:digit:]'
+                      | '[:uppercase:]' 
+                      | '[:lowercase:]'
+                      | '\d' | '\D'
+                      | '\s' | '\S'
+                      | '\w' | '\W'
+                      | '\p{' UnicodePropertySpec '}'
+                      | '\P{' UnicodePropertySpec '}'
+                      | '\R'
+                      | '.'          
+                            
+UnicodePropertySpec ::= BinaryProperty | 
+                        EnumeratedProperty (':' | '=') PropertyValue
+
+BinaryProperty      ::= Identifier
+
+EnumeratedProperty  ::= Identifier
+
+PropertyValue       ::= Identifier

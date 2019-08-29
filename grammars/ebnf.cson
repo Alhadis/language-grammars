@@ -21,7 +21,9 @@ repository:
 	main:
 		patterns: [
 			{include: "#comment"}
-			{include: "#rule"}
+			{include: "#semicolon"}
+			{include: "#lhs"}
+			{include: "#rhs"}
 			{include: "#special"}
 		]
 	
@@ -34,33 +36,86 @@ repository:
 		endCaptures:   0: name: "punctuation.definition.comment.end.ebnf"
 
 	
-	rule:
-		begin: "(?=[A-Za-z][A-Za-z0-9_]*)"
-		end:   ";"
-		endCaptures:
-			0: name: "punctuation.terminator.statement.ebnf"
+	# Left-hand side
+	#
+	# NOTE:
+	# - “Assignment operator” basically refers to `::=`, `:=``, or `=`.
+	# - We include invalid patterns due to improvised EBNF notations are so common.
+	#   However, we scope them as `.non-standard` rather than  `.invalid` or `.illegal`,
+	#   due to the distractions of error highlighting.
+	lhs:
 		patterns: [{
-			# Left-hand side
-			name:  "meta.lhs.ebnf"
-			begin: "\\G"
-			end:   "(?=[=;])"
-			patterns: [{
-				# Identifier
-				name: "entity.name.rule.identifier.ebnf"
-				match: "[A-Za-z][A-Za-z0-9_]*"
-			}]
+			# Valid identifier according to ISO/IEC 14977
+			name: "meta.lhs.ebnf"
+			match: """(?x)
+				(?:    \\s++
+				|      ^|\\G
+				| (?=  ^|\\G    )
+				| (?<= ;|\\*\\) )
+				)
+				
+				# Exclude leading whitespace
+				\\s*
+				
+				([A-Za-z][A-Za-z0-9_]*+)
+			"""
+			captures:
+				1: name: "entity.name.rule.identifier.ebnf"
 		},{
-			# Right-hand side
-			name:  "meta.rhs.ebnf"
-			begin: "="
-			end:   "(?=;)"
-			beginCaptures:
-				0: name: "keyword.operator.assignment.ebnf"
-			patterns: [include: "#rhs"]
-		}]
+			# Identifier containing ostensibly illegal characters
+			name: "meta.lhs.non-standard.ebnf"
+			contentName: "entity.name.rule.identifier.non-standard.ebnf"
+			patterns: [include: "#comment"]
+			begin: """(?x)
+				(?:    \\s++
+				|      ^|\\G
+				| (?=  ^|\\G  )
+				| (?<= \\*\\) )
+				)
+				
+				# Exclude leading whitespace
+				\\s*
+				
+				# Check for at least one “invalid” character
+				(?=
+					# Starts with a digit
+					[0-9]
+					|
+					
+					# Contains at least one non-“word” character
+					[A-Za-z0-9_]*   # Skip any legal characters
+					(?: [^:;=()]    # Don't swallow symbols for comments, terminators, or assignments
+					|   \\((?!\\*)  # Permit open brackets if they don't introduce a comment
+					)
+				)
+			"""
+			end: """(?x)
+				# Exclude trailing whitespace
+				\\s*
+				
+				# Stop before an...
+				(?= :*=      # Assignment operator separating `#lhs` from `#rhs`
+				|   ;        # Unexpected terminator
+				|   \\(\\*   # Embedded comment
+				)
+			"""
+		}, include: "#comment"]
+	
+	
+	# Right-hand side
+	rhs:
+		name:  "meta.rhs.ebnf"
+		begin: "(::=)|(:=)|(=)"
+		end:   "(?=;|^\\s*(?:<?[A-Za-z][A-Za-z0-9_]*>?\\s*)?:*=)"
+		beginCaptures:
+			1: name: "keyword.operator.assignment.non-standard.double-colon.ebnf"
+			2: name: "keyword.operator.assignment.non-standard.single-colon.ebnf"
+			3: name: "keyword.operator.assignment.ebnf"
+		patterns: [include: "#rhs-innards"]
+	
 	
 	# Stuff included inside a rule's right-hand side
-	rhs:
+	"rhs-innards":
 		patterns: [{
 			# Concatenation (comma)
 			name: "punctuation.delimiter.comma.ebnf"
@@ -101,7 +156,7 @@ repository:
 			end:   "\\]"
 			beginCaptures: 0: name: "punctuation.definition.square.bracket.begin.ebnf"
 			endCaptures:   0: name: "punctuation.definition.square.bracket.end.ebnf"
-			patterns: [include: "#rhs"]
+			patterns: [include: "#rhs-innards"]
 		},{
 			# { Repetition }
 			name: "meta.repetition.ebnf"
@@ -109,7 +164,7 @@ repository:
 			end:   "}"
 			beginCaptures: 0: name: "punctuation.definition.curly.bracket.begin.ebnf"
 			endCaptures:   0: name: "punctuation.definition.curly.bracket.end.ebnf"
-			patterns: [include: "#rhs"]
+			patterns: [include: "#rhs-innards"]
 		},{
 			# ( Grouping )
 			name: "meta.group.ebnf"
@@ -117,14 +172,28 @@ repository:
 			end:   "\\)"
 			beginCaptures: 0: name: "punctuation.definition.round.bracket.begin.ebnf"
 			endCaptures:   0: name: "punctuation.definition.round.bracket.end.ebnf"
-			patterns: [include: "#rhs"]
+			patterns: [include: "#rhs-innards"]
 		},{
 			include: "#comment"
 		},{
 			# Rule reference
-			name:  "variable.parameter.argument.identifier.reference.ebnf"
+			name: "variable.parameter.argument.identifier.reference.ebnf"
 			match: "[A-Za-z][A-Za-z0-9_]*"
+		},{
+			# (Non-standard) Negated pattern: !
+			name: "keyword.operator.logical.not.negation.non-standard.ebnf"
+			match: "!"
+		},{
+			# (Non-standard) Quantifiers: *, ?, +
+			include: "source.lex.regexp#quantifier"
 		}]
+	
+	
+	# Rule terminator
+	semicolon:
+		name: "punctuation.terminator.statement.ebnf"
+		match: ";"
+
 
 	# ? Special stuff ?
 	special:
