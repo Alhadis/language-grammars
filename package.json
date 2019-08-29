@@ -2,9 +2,11 @@
 	"name": "language-grammars",
 	"version": "0.0.0",
 	"description": "Syntax highlighting for ABNF/BNF/EBNF, Yacc, and other language-related languages.",
+	"repository": "https://github.com/Alhadis/language-grammars",
 	"author": "John Gardner <gardnerjohng@gmail.com>",
 	"license": "ISC",
 	"keywords": ["ABNF", "BNF", "EBNF", "Yacc", "Bison", "Grammars", "Flex", "Lex", "Augmented", "Backus-Naur", "ISO/IEC 14977"],
 	"dependencies": {"season": "^6.0.2"},
-	"scripts": {"post-install": "node bin/post-install.js"}
+	"scripts": {"post-install": "node bin/post-install.js"},
+	"engines": {"atom": "*"}
 }
