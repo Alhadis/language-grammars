@@ -27,6 +27,9 @@ Previews
 
 > EBNF: ![Highlighted `.ebnf` file](preview-3.png)
 
+> Lex:  ![Highlighted `.lex` file](preview-4.png)
+
+> Yacc: ![Highlighted `.y` file](preview-5.png)
 
 
 
