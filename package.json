@@ -1,6 +1,6 @@
 {
 	"name": "language-grammars",
-	"version": "0.0.0",
+	"version": "1.0.0",
 	"description": "Syntax highlighting for ABNF/BNF/EBNF, Yacc, and other language-related languages.",
 	"repository": "https://github.com/Alhadis/language-grammars",
 	"author": "John Gardner <gardnerjohng@gmail.com>",
