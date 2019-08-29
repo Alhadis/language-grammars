@@ -2,6 +2,20 @@ name: "Augmented Backus-Naur Form"
 scopeName: "source.abnf"
 fileTypes: ["abnf"]
 patterns: [include: "#main"]
+firstLineMatch: """(?ix)
+
+	# Emacs modeline
+	-\\*-(?:\\s*(?=[^:;\\s]+\\s*-\\*-)|(?:.*?[;\\s]|(?<=-\\*-))mode\\s*:\\s*)
+		abnf
+	(?=[\\s;]|(?<![-*])-\\*-).*?-\\*-
+	
+	|
+		
+	# Vim modeline
+	(?:(?:\\s|^)vi(?:m[<=>]?\\d+|m)?|\\sex)(?=:(?=\\s*set?\\s[^\\n:]+:)|:(?!\\s* set?\\s))(?:(?:\\s|\\s*:\\s*)\\w*(?:\\s*=(?:[^\\n\\\\\\s]|\\\\.)*)?)*[\\s:](?:filetype|ft|syntax)\\s*=
+		abnf
+	(?=\\s|:|$)
+"""
 
 repository:
 	main:
