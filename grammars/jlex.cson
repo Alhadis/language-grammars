@@ -21,9 +21,9 @@ firstLineMatch: """(?ix)
 repository:
 	main:
 		patterns: [
-			{include: "#comments"}
 			{include: "#user-code"}
-			{include: "#directives"}
+			{include: "#comments"}
+			{include: "#options"}
 			{include: "#rules"}
 		]
 	
@@ -43,25 +43,65 @@ repository:
 			end:   "\\*/"
 			beginCaptures: 0: name: "punctuation.definition.begin.comment.jlex"
 			endCaptures:   0: name: "punctuation.definition.end.comment.jlex"
+			patterns: [include: "#comment"]
+		}]
+
+
+	# Block of actual Java source
+	"java-code":
+		patterns: [
+			# Character preceded by a backslash
+			name: "constant.character.escape.backslash.jlex"
+			match: "\\\\."
+			
+			{include: "source.java"}
+		]
+
+	# Bracketed varient of the above
+	"java-code-block":
+		begin: "{"
+		end:   "}"
+		beginCaptures: 0: name: "punctuation.definition.curly.bracket.begin.jlex"
+		endCaptures:   0: name: "punctuation.definition.curly.bracket.end.jlex"
+		patterns: [include: "#java-code"]
+		
+	
+	"state-list":
+		patterns: [include: "#comment", {
+			# Lexical state
+			name:  "constant.other.lexical-state.jlex"
+			match: "[A-Za-z_][A-Za-z_0-9]*"
+		},{
+			# Comma
+			name: "punctuation.delimiter.comma.jlex"
+			match: ","
 		}]
 	
 	
-	directives:
-		name:  "name.directives.jlex"
+	# Part I: User-defined code, included verbatim
+	"user-code":
+		name:  "meta.user-code.jlex"
+		begin: "\\A"
+		end:   "^(?=\\s*%%)"
+		patterns: [include: "#java-code"]
+	
+	
+	# Part II: Options, macros and declarations
+	options:
+		name:  "name.options.jlex"
 		begin: "^\\s*(%%)\\s*$\\s*"
 		end:   "^\\s*(%%)\\s*$\\s*"
 		beginCaptures: 1: name: "keyword.control.section.begin.jlex"
 		endCaptures:   1: name: "keyword.control.section.end.jlex"
-		patterns: [
-			{include: "#passthrough"}
-			{include: "#directive"}
-			{include: "#comments"}
-			{include: "#macro"}
-		]
-	
-	
-	directive:
 		patterns: [{
+			# Passthrough
+			name:  "meta.code-chunk.jlex"
+			begin: "^\\s*%{"
+			end:   "^\\s*%}"
+			beginCaptures: 0: name: "punctuation.section.embedded.begin.jlex"
+			endCaptures:   0: name: "punctuation.section.embedded.end.jlex"
+			patterns: [include: "#java-code"]
+		},{
 			# %class name
 			match: "((%)(?:class|extends|implements|extends|cupsym))\\s+(\\S.*)"
 			captures:
@@ -89,13 +129,7 @@ repository:
 			beginCaptures:
 				0: name: "keyword.control.directive.jlex"
 				1: name: "punctuation.definition.directive.jlex"
-			patterns: [{
-				name:  "variable.other.definition.jlex"
-				match: "[A-Za-z_][A-Za-z_0-9]*"
-			},{
-				name:  "punctuation.delimiter.comma.jlex"
-				match: ","
-			}]
+			patterns: [include: "#state-list"]
 		},{
 			# Code blocks of the form `%foo{ ... %foo}'
 			name:  "meta.code-block.directive.$3.jlex"
@@ -109,9 +143,9 @@ repository:
 				1: name: "keyword.control.directive.jlex"
 				2: name: "punctuation.definition.directive.jlex"
 				3: name: "punctuation.definition.curly.bracket.end.jlex"
-			patterns: [include: "source.java"]
+			patterns: [include: "#java-code"]
 		},{
-			# Everything else
+			# Other options/directives
 			begin: "^\\s*((%)\\w+)(\\s+\\S.*)?"
 			end:   "(?=$)"
 			beginCaptures:
@@ -121,37 +155,54 @@ repository:
 					{include: "#comments"}
 					{match: "\\S+", name: "constant.language.other.lex"}
 				]
-		}]
+		},{
+			# Macro
+			match: "^\\s*([^\\s=]+)\\s*(=)(\\s*\\S.*)$"
+			captures:
+				1: name: "entity.macro.name.jlex"
+				2: name: "keyword.operator.assignment.jlex"
+				3: name: "meta.macro.definition.jlex", patterns: [{
+					include: "source.lex.regexp"
+				}]
+		}, include: "#comments"]
 	
-	macro:
-		match: "^\\s*([^\\s=]+)\\s*(=)(\\s*\\S.*)$"
-		captures:
-			1: name: "entity.macro.name.jlex"
-			2: name: "keyword.operator.assignment.jlex"
-			3: name: "meta.macro.definition.jlex", patterns: [{
-				include: "source.lex.regexp"
-			}]
 	
-	passthrough:
-		name:  "meta.code-chunk.jlex"
-		begin: "^\\s*%{"
-		end:   "^\\s*%}"
-		beginCaptures: 0: name: "punctuation.section.embedded.begin.jlex"
-		endCaptures:   0: name: "punctuation.section.embedded.end.jlex"
-		patterns: [include: "source.java"]
-
-
+	# Part III: Lexical rules
 	rules:
 		patterns: [{
-			name:  "meta.rule.jlex"
-			begin: '^\\s*("[^"]+")\\s+({)'
+			include: "#comments"
+		},{
+			# <STATE,CONDITION>
+			name:  "meta.state-condition.jlex"
+			begin: "^\\s*(<)"
+			end:   ">"
+			beginCaptures: 1: name: "punctuation.definition.angle.bracket.begin.jlex"
+			endCaptures:   0: name: "punctuation.definition.angle.bracket.end.jlex"
+			patterns: [include: "#state-list"]
+		},{
+			# State group
+			name:  "meta.state-group.jlex"
+			begin: "(?<=>)\\s*({)"
+			end:   "}"
+			beginCaptures: 1: name: "punctuation.section.group.curly.bracket.begin.jlex"
+			endCaptures:   0: name: "punctuation.section.group.curly.bracket.end.jlex"
+			patterns: [
+				{include: "#java-code"}
+				{include: "#rules"}
+			]
+		},{
+			# Hit-and-miss pattern for the pattern/string before a Java block
+			name:  "meta.rule-action.jlex"
+			begin: "(?:^|\\G|(?=^|\\G))\\s*([^\\s{<].*?)\\s*({)"
 			end:   "}"
 			beginCaptures:
-				1: patterns: [include: "source.lex.regexp#string"]
-				2: name: "punctuation.definition.curly.bracket.begin.jlex"
+				1: patterns: [include: "source.lex.regexp"]
+				2: name: "punctuation.section.group.curly.bracket.begin.jlex"
 			endCaptures:
-				0: name: "punctuation.definition.curly.bracket.begin.jlex"
-			patterns: [include: "source.java"]
+				0: name: "punctuation.section.group.curly.bracket.end.jlex"
+			patterns: [include: "#java-code"]
+		},{
+			include: "source.lex.regexp"
 		},{
 			name:  "meta.rule.jlex"
 			begin: "^([^{]*[^\\s{][^{]*)({\\w+}\\s*)?({)"
@@ -163,13 +214,4 @@ repository:
 			endCaptures:
 				0: name: "punctuation.definition.curly.bracket.begin.jlex"
 			patterns: [include: "source.java"]
-		}]
-	
-	
-	"user-code":
-		patterns: [{
-			name:  "meta.user-code.jlex"
-			begin: "\\G"
-			end:   "^(?=\\s*%%)"
-			patterns: [include: "source.java"]
-		}]
+		}, include: "#comments"]
