@@ -1,6 +1,6 @@
 name: "Lex"
 scopeName: "source.lex"
-fileTypes: ["l", "lex"]
+fileTypes: ["l", "lex", "flex"]
 patterns: [include: "#main"]
 firstLineMatch: """(?ix)
 
