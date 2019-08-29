@@ -20,15 +20,20 @@ Includes highlighting for embedded C/C++ source (Yacc/Lex files only).
 Previews
 --------
 
-> ABNF: ![Highlighted `.abnf` file](preview-1.png)
+> ABNF:  
+![Highlighted `.abnf` file](https://raw.githubusercontent.com/Alhadis/language-grammars/static/preview-1.png)
 
-> BNF:  ![Highlighted `.bnf` file](preview-2.png)
+> BNF:   
+![Highlighted `.bnf` file](https://raw.githubusercontent.com/Alhadis/language-grammars/static/preview-2.png)
 
-> EBNF: ![Highlighted `.ebnf` file](preview-3.png)
+> EBNF:  
+![Highlighted `.ebnf` file](https://raw.githubusercontent.com/Alhadis/language-grammars/static/preview-3.png)
 
-> Lex:  ![Highlighted `.lex` file](preview-4.png)
+> Lex:  
+![Highlighted `.lex` file](https://raw.githubusercontent.com/Alhadis/language-grammars/static/preview-4.png)
 
-> Yacc: ![Highlighted `.y` file](preview-5.png)
+> Yacc:  
+![Highlighted `.y` file](https://raw.githubusercontent.com/Alhadis/language-grammars/static/preview-5.png)
 
 
 
