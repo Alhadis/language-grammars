@@ -99,8 +99,18 @@ repository:
 			{include: "#optional"}
 			{include: "#core-rules"}
 			{include: "#reference"}
+			{include: "#prose"}
 			{match: "/", name: "keyword.operator.logical.or.alternation.pipe.abnf"}
 		]
+	
+	
+	# <Free-form text>
+	prose:
+		name:  "string.other.prose.abnf"
+		begin: "<"
+		end:   ">"
+		beginCaptures: 0: name: "punctuation.definition.string.begin.abnf"
+		endCaptures:   0: name: "punctuation.definition.string.end.abnf"
 
 
 	# Repetition
