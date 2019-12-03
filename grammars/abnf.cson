@@ -31,6 +31,10 @@ repository:
 			name: "keyword.operator.assignment.increment.abnf"
 			match: "=/"
 		},{
+			# Alternative/non-standard syntax: :=
+			name: "keyword.operator.assignment.colon.non-standard.abnf"
+			match: ":+="
+		},{
 			# Normal assignment: =
 			name: "keyword.operator.assignment.abnf"
 			match: "="
