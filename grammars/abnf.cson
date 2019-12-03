@@ -48,10 +48,10 @@ repository:
 	"core-rules":
 		name: "support.constant.reference.core-rule.abnf"
 		match: """(?x)
-			\\b
+			\\b (?<!-)
 			(ALPHA|BIT|CHAR|CRLF|CR|CTL|DIGIT|DQUOTE
 			|HEXDIG|HTAB|LF|LWSP|OCTET|SP|VCHAR|WSP)
-			\\b
+			\\b (?!-)
 		"""
 	
 	# (Grouped tokens)
