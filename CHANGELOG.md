@@ -3,14 +3,17 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-[Unpublished]: ../../compare/v1.0.1...HEAD
+[Unpublished]: ../../compare/v1.0.2...HEAD
 
 
-[Unpublished]
+[v1.0.2]
 ------------------------------------------------------------------------
+**December 4th, 2019**  
 * __Added:__ Support for ABNF `<prose sequences>`
 * __Added:__ Tokenisation of non-standard `:=` delimiters in ABNF files
 * __Fixed:__ Incorrect matching of core-rule names followed by dashes
+
+[v1.0.2]: https://github.com/Alhadis/language-grammars/releases/tag/v1.0.2
 
 
 [v1.0.1]
