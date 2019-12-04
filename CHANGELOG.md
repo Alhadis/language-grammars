@@ -1,0 +1,43 @@
+Change Log
+==========
+
+This project adheres to [Semantic Versioning](http://semver.org/).
+
+[Unpublished]: ../../compare/v1.0.1...HEAD
+
+
+[Unpublished]
+------------------------------------------------------------------------
+* __Added:__ Support for ABNF `<prose sequences>`
+* __Added:__ Tokenisation of non-standard `:=` delimiters in ABNF files
+* __Fixed:__ Incorrect matching of core-rule names followed by dashes
+
+
+[v1.0.1]
+------------------------------------------------------------------------
+**August 30th, 2019**  
+* __Fixed:__ Missing C/C++ highlighting in Lex/Yacc files
+* __Fixed:__ Preview-images needlessly included in package distribution
+
+[v1.0.1]: https://github.com/Alhadis/language-grammars/releases/tag/v1.0.1
+
+
+[v1.0.0]
+------------------------------------------------------------------------
+**August 30th, 2019**  
+Initial release. Adds syntax highlighting for the following languages:
+
+* [Augmented Backus-Naur Form][ABNF]
+* [Backus-Naur Form][BNF]
+* [Extended Backus-Naur Form][EBNF]
+* [Lex][]  / [Flex][]
+* [Yacc][] / [Bison][]
+
+[v1.0.0]: https://github.com/Alhadis/language-grammars/releases/tag/v1.0.0
+[ABNF]:   https://en.wikipedia.org/wiki/Augmented_Backus–Naur_form
+[BNF]:    https://en.wikipedia.org/wiki/Backus–Naur_form
+[EBNF]:   https://en.wikipedia.org/wiki/Extended_Backus–Naur_form
+[Lex]:    https://en.wikipedia.org/wiki/Lex_(software)
+[Flex]:   https://en.wikipedia.org/wiki/Flex_(lexical_analyser_generator)
+[Yacc]:   https://en.wikipedia.org/wiki/Yacc
+[Bison]:  https://www.gnu.org/software/bison/manual/bison.html
