@@ -6,6 +6,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [Unpublished]: ../../compare/v1.0.2...HEAD
 
 
+[Unpublished]
+------------------------------------------------------------------------
+* __Added:__ Support for [Lark-flavoured EBNF][Lark] [[`#4`]]
+
+[Lark]: https://lark-parser.readthedocs.io/en/latest/grammar.html
+[`#4`]: https://github.com/Alhadis/language-grammars/issues/4
+
+
 [v1.0.2]
 ------------------------------------------------------------------------
 **December 4th, 2019**  

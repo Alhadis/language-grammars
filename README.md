@@ -11,6 +11,7 @@ Supported formats
 *	[Augmented Backus-Naur Form][ABNF]
 *	[Backus-Naur Form][BNF]
 *	[Extended Backus-Naur Form][EBNF] ([ISO/IEC 14977][] + extensions)
+*	[Lark][]
 *	[Lex][]  / [Flex][]
 *	[Yacc][] / [Bison][]
 
@@ -42,6 +43,7 @@ Previews
 [BNF]:  https://en.wikipedia.org/wiki/Backus–Naur_form
 [EBNF]: https://en.wikipedia.org/wiki/Extended_Backus–Naur_form
 [ISO/IEC 14977]: http://www.cl.cam.ac.uk/~mgk25/iso-14977.pdf
+[Lark]:  https://lark-parser.readthedocs.io/en/latest/grammar.html
 [Lex]:   https://en.wikipedia.org/wiki/Lex_(software)
 [Flex]:  https://en.wikipedia.org/wiki/Flex_(lexical_analyser_generator)
 [Yacc]:  https://en.wikipedia.org/wiki/Yacc

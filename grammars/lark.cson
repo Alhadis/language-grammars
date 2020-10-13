@@ -1,0 +1,319 @@
+name: "Lark"
+scopeName: "source.lark"
+fileTypes: ["lark"]
+patterns: [{
+	# Interpreter directive
+	name:  "comment.line.number-sign.shebang.lark"
+	begin: "\\A#!"
+	end:   "$"
+	beginCaptures:
+		0: name: "punctuation.definition.comment.shebang.lark"
+}, include: "#main"]
+firstLineMatch: """(?ix)
+	
+	# Hashbang
+	^\\#!.*(?:\\s|\\/|(?<=!)\\b)
+		(?-i:lark)
+	(?:$|\\s)
+	
+	|
+	
+	# Emacs modeline
+	-\\*-(?:\\s*(?=[^:;\\s]+\\s*-\\*-)|(?:.*?[;\\s]|(?<=-\\*-))mode\\s*:\\s*)
+		lark
+	(?=[\\s;]|(?<![-*])-\\*-).*?-\\*-
+	
+	|
+	
+	# Vim modeline
+	(?:(?:\\s|^)vi(?:m[<=>]?\\d+|m)?|\\sex)(?=:(?=\\s*set?\\s[^\\n:]+:)|:(?!\\s* set?\\s))
+	(?:(?:\\s|\\s*:\\s*)\\w*(?:\\s*=(?:[^\\n\\\\\\s]|\\\\.)*)?)*[\\s:]
+	(?:filetype|ft|syntax)\\s*=
+		lark
+	(?=\\s|:|$)
+"""
+
+repository:
+	main:
+		patterns: [
+			{include: "#comment"}
+			{include: "#template"}
+			{include: "#definition"}
+			{include: "#directives"}
+		]
+
+
+	# Name of the preceding pattern
+	alias:
+		name:  "meta.alias.lark"
+		match: "(->)\\s*((!?[_?]|!)?[a-zA-Z][_a-zA-Z0-9]*)?"
+		captures:
+			1: name: "storage.type.alias.lark"
+			2: name: "entity.name.alias.lark"
+			3: patterns: [include: "#name-prefix"]
+
+
+	# Commas separating list entries
+	comma:
+		name: "punctuation.delimiter.separator.list.comma.lark"
+		match: ","
+
+
+	# C++-style comment
+	comment:
+		name:  "comment.line.double-slash.lark"
+		begin: "//"
+		end:   "$"
+		beginCaptures:
+			0: name: "punctuation.definition.comment.lark"
+
+
+	# Rule or terminal definition
+	definition:
+		patterns: [{
+			# Terminal
+			name:  "meta.definition.terminal.lark"
+			begin: "^\\s*((!?[_?]|!)?[A-Z][_A-Z0-9]*)\\s*(\\.[-+.\\d]+\\s*)?(:)"
+			end:   "(?!\\G|^\\s*$)(?=^\\s*[^\\s|])"
+			beginCaptures:
+				1: name: "entity.name.terminal.lark"
+				2: patterns: [include: "#name-prefix"]
+				3: patterns: [include: "#priority"]
+				4: name: "keyword.operator.assignment.lark"
+			patterns: [include: "#definition-innards"]
+		},{
+			# Rule
+			name:  "meta.definition.rule.lark"
+			begin: "^\\s*((!?[_?]|!)?[a-z][_a-z0-9]*)\\s*(\\.[-+.\\d]+\\s*)?(:)"
+			end:   "(?!\\G|^\\s*$)(?=^\\s*[^\\s|])"
+			beginCaptures:
+				1: name: "entity.name.rule.lark"
+				2: patterns: [include: "#name-prefix"]
+				3: patterns: [include: "#priority"]
+				4: name: "keyword.operator.assignment.lark"
+			patterns: [include: "#definition-innards"]
+		}]
+
+
+	# Stuff matched inside a rule or terminal definition
+	"definition-innards":
+		patterns: [
+			{include: "#groups"}
+			{include: "#alias"}
+			{include: "#operators"}
+			{include: "#comment"}
+			{include: "#string"}
+			{include: "#regexp"}
+			{include: "#flags"}
+			{include: "#range"}
+			{include: "#template-usage"}
+			{include: "#name"}
+			{include: "#comma"}
+		]
+
+
+	# Directive statements
+	directives:
+		patterns: [{
+			# %import
+			name:  "meta.directive.import.lark"
+			begin: "(?:^|\\G)\\s*((%)import)(?=\\s|$)"
+			end:   "$"
+			beginCaptures:
+				1: name: "keyword.control.directive.import.lark"
+				2: name: "punctuation.definition.directive.lark"
+			patterns: [{
+				name:  "meta.import-specification.lark"
+				begin: "\\G\\s+(\\.?\\w+(?:\\.\\w+)*+)(?=\\s|$)[ \\t]*"
+				end:   "(?=$)"
+				beginCaptures:
+					0: name: "meta.module-reference.lark"
+					1: name: "string.unquoted.module.import.lark", patterns: [
+						{include: "#dot"}
+						{include: "#name"}
+					]
+				patterns: [
+					{include: "#alias"}
+					{include: "#name-list"}
+					{include: "#comment"}
+				]
+			}, include: "#comment"]
+		},{
+			# Anything else
+			name:  "meta.directive.$3.lark"
+			begin: "(?:^|\\G)\\s*((%)(?!_)([A-Za-z_]+))(?=\\s|$)"
+			end:   "(?!\\G|^\\s*$)(?=^\\s*[^\\s|])"
+			beginCaptures:
+				1: name: "keyword.control.directive.$3.lark"
+				2: name: "punctuation.definition.directive.lark"
+			patterns: [include: "#definition-innards"]
+		}]
+
+
+	# Full-stop/period
+	dot:
+		name: "punctuation.delimiter.separator.period.dot.lark"
+		match: "\\."
+
+
+	# Modifier flags affixed to a regexp/string
+	flags:
+		name:  "storage.modifier.flags.lark"
+		match: '(?<=/|")[imslux]+'
+
+
+	# Grouped definition elements
+	groups:
+		patterns: [{
+			# (Round brackets)
+			name:  "meta.group.lark"
+			begin: "\\("
+			end:   "\\)"
+			beginCaptures: 0: name: "punctuation.section.group.round.bracket.begin.lark"
+			endCaptures:   0: name: "punctuation.section.group.round.bracket.end.lark"
+			patterns: [include: "#definition-innards"]
+		},{
+			# [Square brackets]
+			name:  "meta.group.lark"
+			begin: "\\["
+			end:   "\\]"
+			beginCaptures: 0: name: "punctuation.section.group.square.bracket.begin.lark"
+			endCaptures:   0: name: "punctuation.section.group.square.bracket.end.lark"
+			patterns: [include: "#definition-innards"]
+		}]
+
+
+	# Reference to another definition
+	name:
+		name: "variable.definition.reference.lark"
+		match: "(!?[_?]|!)?(?:[A-Z][_A-Z0-9]*|[a-z][_a-z0-9]*)"
+		captures:
+			1: patterns: [include: "#name-prefix"]
+
+
+	# Bracketed list of definition names: (foo, bar, …)
+	"name-list":
+		name:  "meta.name-list.lark"
+		begin: "\\G\\s*(\\()"
+		end:   "\\)"
+		beginCaptures: 1: name: "punctuation.definition.name-list.round.bracket.begin.lark"
+		endCaptures:   0: name: "punctuation.definition.name-list.round.bracket.end.lark"
+		patterns: [
+			{include: "#name"}
+			{include: "#comma"}
+			{include: "#comment"}
+		]
+
+
+	# Non-alphabetic characters prefixing a definition name
+	"name-prefix":
+		name: "storage.modifier.tree-shaping.lark"
+		match: "(?:\\G|^)(!?[_?]|!)"
+		captures:
+			1: name: "punctuation.definition.name.lark"
+
+
+	# Integer or floating-point value (Source: `common.lark`)
+	number:
+		name:  "constant.numeric.decimal.lark"
+		match: "-?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?"
+
+
+	# Quantifier or logical operator
+	operators:
+		patterns: [{
+			# Boolean OR
+			name: "keyword.operator.logical.or.lark"
+			match: "\\|",
+		},{
+			# Simple quantifiers
+			name: "keyword.operator.quantifier.lark"
+			match: "[+*?]"
+		},{
+			# Arbitrary quantifier
+			name: "meta.exact-quantity.lark"
+			match: "(~)\\s*(\\d+)(?:(\\.\\.)(\\d+))?"
+			captures:
+				1: name: "keyword.operator.quantifier.arbitrary.lark"
+				2: patterns: [include: "#number"]
+				3: name: "punctuation.separator.range.quantities.lark"
+				4: patterns: [include: "#number"]
+		}]
+
+
+	# Priority level
+	priority:
+		name:  "meta.priority.lark"
+		begin: "(?:\\G|^)\\."
+		end:   "$|(?=:)"
+		beginCaptures:
+			0: patterns: [include: "#dot"]
+		patterns: [include: "#number"]
+
+
+	# Character range indicator
+	range:
+		name: "punctuation.separator.range.characters.lark"
+		match: '(?<=")\\.\\.'
+
+
+	# Regular expression, taken directly from Lark's own grammar
+	regexp:
+		name:  "string.regexp.lark"
+		begin: "/(?!/)"
+		end:   "/"
+		beginCaptures: 0: name: "punctuation.definition.string.begin.lark"
+		endCaptures:   0: name: "punctuation.definition.string.end.lark"
+		patterns: [include: "source.regexp.python"]
+
+
+	# "Quoted string"
+	string:
+		name:  "string.quoted.double.lark"
+		begin: '"'
+		end:   '"'
+		beginCaptures: 0: name: "punctuation.definition.string.begin.lark"
+		endCaptures:   0: name: "punctuation.definition.string.end.lark"
+		patterns: [match: "\\\\.", name: "constant.character.escape.lark"]
+
+
+	# template{arg1, arg2}: <EBNF_EXPRESSION>
+	template:
+		name:  "meta.definition.template.lark"
+		begin: "^\\s*((!?[_?]|!)?\\w+)\\s*(?={.*?}\\s*:)"
+		end:   "(?!\\G|^\\s*$)(?=^\\s*[^\\s|])"
+		beginCaptures:
+			1: name: "entity.name.template.function.lark"
+			2: patterns: [include: "#name-prefix"]
+		patterns: [
+			{include: "#template-args"}
+			{include: "#definition-innards"}
+		]
+
+
+	# Template arguments
+	"template-args":
+		name:  "meta.function.parameters.lark"
+		begin: "\\G\\s*({)"
+		end:   "(})(?:\\s*(:))?|(?=\\s*$)"
+		beginCaptures:
+			1: name: "punctuation.definition.parameters.begin.lark"
+		endCaptures:
+			1: name: "punctuation.definition.parameters.end.lark"
+			2: name: "keyword.operator.assignment.lark"
+		patterns: [
+			{include: "#template-usage"}
+			{match: "\\w+", name: "variable.parameter.template.argument.lark"}
+			{include: "#definition-innards"}
+		]
+
+
+	# Template expansion
+	"template-usage":
+		name:  "meta.function-call.lark"
+		begin: "((!?[_?]|!)?\\w+)\\s*(?={)"
+		end:   "(?!\\G)"
+		beginCaptures:
+			1: name: "entity.name.template.function.lark"
+			2: patterns: [include: "#name-prefix"]
+		patterns: [include: "#template-args"]

@@ -1,0 +1,63 @@
+#!/usr/bin/env lark
+
+// Rules
+foo: /[\d]+/
+bar: "Bar"
+baz: "Baz"
+ba_: bar | baz
+
+start : (A | B)+
+A     : "a" | "ab"
+B     : "b"
+
+
+// Terminals
+IF: "if"
+INTEGER : /[0-9]+/
+INTEGER2 : ("0".."9")+           //Same as INTEGER
+DECIMAL.2: INTEGER? "." INTEGER  //Will be matched before INTEGER
+WHITESPACE: (" " | /\t/ )+
+SQL_SELECT: "select"i
+
+
+// Templates
+_separated{x, sep}: x (sep x)*  // Define a sequence of 'x sep x sep x ...'
+num_list: "[" _separated{NUMBER, ","}  "]"  // Will match "[1, 2, 3]" etc.
+num_list: "[" _separated { ETC , "," } "]"  // Embedded whitespace is legal
+num_list: "[" _separated{NUMBER, ","} }
+
+noop{item}: item
+nested_templates: _separated{ noop{NUMBER} }
+multiline_template{x, y, z}: x
+	| y
+	| z
+
+
+// Directive statements
+%import import_path -> name
+%import import_path (foo, bar)
+%import common.NUMBER
+%import .terminals_file (A, B, C)
+%import .rules_file.rulea -> ruleb
+
+%declare
+%declare name
+%declare foo, bar, baz
+
+COMMENT: "#" /[^\n]/*
+%ignore " "
+%ignore TERMINAL
+%ignore COMMENT
+
+%unknown_directive foo
+	| TERMINAL
+	| "string literal"
+	| /regexp literal/
+	| (bar baz)
+	| [bar baz]
+	| item?
+	| item*
+	| item+
+	| item ~ 3
+	| item ~ 3..6
+%EOF

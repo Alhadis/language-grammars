@@ -12,6 +12,10 @@
 		commentEnd:   "*)"
 		increaseIndentPattern: "=\\s*$"
 
+".source.lark":
+	editor:
+		commentStart: "// "
+
 ".source.lex":
 	editor:
 		commentStart: "/*"
