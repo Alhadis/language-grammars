@@ -65,6 +65,10 @@ repository:
 			name: "keyword.operator.logical.repetition.asterisk.star.bnf"
 			match: "\\*"
 		},{
+			# Repetition: 0 or 1
+			name: "keyword.operator.logical.repetition.question-mark.bnf"
+			match: "\\?"
+		},{
 			# Repetition: 1 or more
 			name: "keyword.operator.logical.repetition.plus.bnf"
 			match: "\\+"
@@ -114,4 +118,14 @@ repository:
 			end:   "'"
 			beginCaptures: 0: name: "punctuation.definition.string.begin.bnf"
 			endCaptures:   0: name: "punctuation.definition.string.end.bnf"
-		}, include: "#comment"]
+		},{
+			include: "#comment"
+		},{
+			# Empty rule indicator (non-standard)
+			name: "comment.ignored.empty-rule.bnf"
+			match: "ε"
+		},{
+			# Fallback highlighting for unexpected syntax
+			name: "string.unquoted.bareword.unknown-symbol.bnf"
+			match: "[^\\s|*+\\[\\]{}()<>\"';]+"
+		}]

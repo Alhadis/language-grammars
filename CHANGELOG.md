@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 [Unpublished]
 ------------------------------------------------------------------------
+* __Added:__ Fallback highlighting for unrecognised BNF symbols
 * __Added:__ Support for [Lark-flavoured EBNF][Lark] [[`#4`]]
 * __Fixed:__ BNF rules restricted to single-line definitions only
 * __Fixed:__ Broken highlighting of EBNF rule-names that contain dashes

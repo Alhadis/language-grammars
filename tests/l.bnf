@@ -1,0 +1,80 @@
+<Grammar> ::= <ListDef>
+
+<ListDef>
+	::= ; Empty rule
+		| <Def>
+		| <Def> ";" <ListDef>
+		|       ";" <ListDef>
+
+<Def>
+	::= entrypoints      <ListCat>
+	|                    <Label> . <Cat> ::= <ListItem>
+	|   internal         <Label> . <Cat> ::= <ListItem>
+	|   separator        <MinimumSize> <Cat> <String>
+	|   terminator       <MinimumSize> <Cat> <String>
+	|   coercions        <Ident> <Integer>
+	|   rules            <Ident> ::= <ListRHS>
+	|   comment          <String>
+	|   comment          <String> <String>
+	|   token            <Ident> <Reg>
+	|   position token   <Ident> <Reg>
+	|   layout           <ListString>
+	|   layout stop      <ListString>
+	|   layout toplevel
+
+<ListCat>  ::= <Cat>     | <Cat> "," <ListCat>
+<ListItem> ::=           | <Item> <ListItem>
+<Item>     ::= <String>  | <Cat>
+<Cat>      ::= [ <Cat> ] | <Ident>
+
+<Label>
+	::= <LabelId>
+	|   <LabelId> <ListProfItem>
+	|   <LabelId> <LabelId> <ListProfItem>
+
+<LabelId>
+	::= <Ident>
+		| _
+		| [ ]
+		| ( : )
+		| ( : [ ] )
+
+<ProfItem>
+	::= ( [ <ListIntList> ] , [ <ListInteger> ] )
+
+<IntList>
+	::= [ <ListInteger> ]
+
+<ListInteger>
+	::= ε
+		| <Integer>
+		| <Integer> , <ListInteger>
+
+<ListIntList>
+	::= ε
+		| <IntList>
+		| <IntList> , <ListIntList>
+
+<ListProfItem> ::= <ProfItem> | <ProfItem> <ListProfItem>
+<ListString>   ::= <String>   | <String> , <ListString>
+<ListRHS>      ::= <RHS> | <RHS> | <ListRHS>
+<RHS>          ::= <ListItem>
+<MinimumSize>  ::= ε | nonempty
+
+<Reg>          ::= <Reg>  | <Reg1> | <Reg1>
+<Reg1>         ::= <Reg1> − <Reg2> | <Reg2>
+<Reg2>         ::= <Reg2>   <Reg3> | <Reg3>
+<Reg3>
+	::= <Reg3> *
+	|   <Reg3> +
+	|   <Reg3> ?
+	|   eps
+	|   <Char>
+	|   [ <String> ]
+	|   { <String> }
+	|   digit
+	|   letter
+	|   upper
+	|   lower
+	|   char
+	|   ( <Reg> )
