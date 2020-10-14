@@ -22,19 +22,22 @@ Previews
 --------
 
 > ABNF:  
-![Highlighted `.abnf` file](https://raw.githubusercontent.com/Alhadis/language-grammars/static/preview-1.png)
+![Highlighted `.abnf` file](https://raw.githubusercontent.com/Alhadis/language-grammars/static/previews/abnf.png)
 
 > BNF:   
-![Highlighted `.bnf` file](https://raw.githubusercontent.com/Alhadis/language-grammars/static/preview-2.png)
+![Highlighted `.bnf` file](https://raw.githubusercontent.com/Alhadis/language-grammars/static/previews/bnf.png)
 
 > EBNF:  
-![Highlighted `.ebnf` file](https://raw.githubusercontent.com/Alhadis/language-grammars/static/preview-3.png)
+![Highlighted `.ebnf` file](https://raw.githubusercontent.com/Alhadis/language-grammars/static/previews/ebnf.png)
+
+> Lark:  
+![Highlighted `.lark` file](https://raw.githubusercontent.com/Alhadis/language-grammars/static/previews/lark.png)
 
 > Lex:  
-![Highlighted `.lex` file](https://raw.githubusercontent.com/Alhadis/language-grammars/static/preview-4.png)
+![Highlighted `.lex` file](https://raw.githubusercontent.com/Alhadis/language-grammars/static/previews/lex.png)
 
 > Yacc:  
-![Highlighted `.y` file](https://raw.githubusercontent.com/Alhadis/language-grammars/static/preview-5.png)
+![Highlighted `.y` file](https://raw.githubusercontent.com/Alhadis/language-grammars/static/previews/yacc.png)
 
 
 
