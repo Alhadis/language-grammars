@@ -40,6 +40,7 @@ repository:
 	#
 	# NOTE:
 	# - “Assignment operator” basically refers to `::=`, `:=``, or `=`.
+	# - Dashes are tolerated in rule-names, irrespective of ISO/IEC 14977 conformance.
 	# - We include invalid patterns due to improvised EBNF notations are so common.
 	#   However, we scope them as `.non-standard` rather than  `.invalid` or `.illegal`,
 	#   due to the distractions of error highlighting.
@@ -57,7 +58,7 @@ repository:
 				# Exclude leading whitespace
 				\\s*
 				
-				([A-Za-z][A-Za-z0-9_]*+)
+				([A-Za-z][A-Za-z0-9_-]*+)
 			"""
 			captures:
 				1: name: "entity.name.rule.identifier.ebnf"
@@ -83,7 +84,7 @@ repository:
 					|
 					
 					# Contains at least one non-“word” character
-					[A-Za-z0-9_]*   # Skip any legal characters
+					[A-Za-z0-9_-]*  # Skip any legal characters
 					(?: [^:;=()]    # Don't swallow symbols for comments, terminators, or assignments
 					|   \\((?!\\*)  # Permit open brackets if they don't introduce a comment
 					)
@@ -106,7 +107,7 @@ repository:
 	rhs:
 		name:  "meta.rhs.ebnf"
 		begin: "(::=)|(:=)|(=)"
-		end:   "(?=;|^\\s*(?:<?[A-Za-z][A-Za-z0-9_]*>?\\s*)?:*=)"
+		end:   "(?=;|^\\s*(?:<?[A-Za-z][A-Za-z0-9_-]*>?\\s*)?:*=)"
 		beginCaptures:
 			1: name: "keyword.operator.assignment.non-standard.double-colon.ebnf"
 			2: name: "keyword.operator.assignment.non-standard.single-colon.ebnf"
@@ -178,7 +179,7 @@ repository:
 		},{
 			# Rule reference
 			name: "variable.parameter.argument.identifier.reference.ebnf"
-			match: "[A-Za-z][A-Za-z0-9_]*"
+			match: "[A-Za-z][A-Za-z0-9_-]*"
 		},{
 			# (Non-standard) Negated pattern: !
 			name: "keyword.operator.logical.not.negation.non-standard.ebnf"
