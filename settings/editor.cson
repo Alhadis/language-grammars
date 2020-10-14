@@ -16,6 +16,11 @@
 	editor:
 		commentStart: "// "
 
+".source.lbnf":
+	editor:
+		commentStart: "{-"
+		commentEnd:   "-}"
+
 ".source.lex":
 	editor:
 		commentStart: "/*"

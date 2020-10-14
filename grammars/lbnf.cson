@@ -1,0 +1,124 @@
+name: "Labelled Backus-Naur Form"
+scopeName: "source.lbnf"
+fileTypes: ["cf", "lbnf"]
+patterns: [include: "#main"]
+
+repository:
+	main:
+		patterns: [
+			{include: "#comments"}
+			{include: "#definition"}
+			{include: "#literals"}
+		]
+
+
+	# Comments
+	comments:
+		patterns: [{
+			# -- Single line
+			name:  "comment.line.double-dash.lbnf"
+			begin: "--"
+			end:   "$"
+			beginCaptures:
+				0: name: "punctuation.definition.comment.lbnf"
+		},{
+			# {- Block comment -}
+			name:  "comment.block.lbnf"
+			begin: "{-"
+			end:   "-}"
+			beginCaptures: 0: name: "punctuation.definition.comment.begin.lbnf"
+			endCaptures:   0: name: "punctuation.definition.comment.end.lbnf"
+		}]
+
+
+	# Something quacking like a rule definition
+	definition:
+		# [internal] <Label> . <Def> ;
+		name:  "meta.definition.lbnf"
+		begin: "(?:\\G|^)\\s*(?:(internal)\\s+)?(_|:|[A-Za-z][A-Za-z0-9_]*)\\s*(\\.)"
+		end:   "(?!\\G)(?=^\\s*[A-Za-z])|;"
+		beginCaptures:
+			1: name: "storage.modifier.internal.lbnf"
+			2: name: "entity.name.label.lbnf"
+			3: name: "punctuation.separator.label.lbnf"
+		endCaptures:
+			0: name: "punctuation.terminator.statement.semicolon.lbnf"
+		patterns: [{
+			# Skip blank lines
+			begin: "\\G(?=\\s*$)"
+			end:   "(?=\\S)"
+		},{
+			include: "#keywords"
+		},{
+			# Left-hand side: …<Category>…
+			name:  "meta.lhs.lbnf"
+			begin: "[A-Za-z][A-Za-z0-9_]*"
+			end:   "(?!\\G)(?=^\\s*[A-Za-z])|(?=::=|;)"
+			beginCaptures:
+				0: name: "storage.type.class.category.lbnf"
+			patterns: [include: "#comments"]
+		},{
+			# Production rule: … ::=
+			begin: "::="
+			end:   "(?=;)"
+			beginCaptures:
+				0: name: "keyword.operator.assignment.ebnf"
+			contentName: "meta.rhs.lbnf"
+			patterns: [include: "#rhs"]
+		}]
+
+
+	# Identifier
+	ident:
+		name: "variable.parameter.identifier.lbnf"
+		match: "[A-Za-z][A-Za-z0-9_]*"
+
+
+	# Reserved words
+	keywords:
+		name:  "keyword.operator.eserved-word.$1.lbnf"
+		match: """(?x) \\b
+			( char
+			| coercions
+			| comment
+			| digit
+			| entrypoints
+			| eps
+			| internal
+			| layout
+			| letter
+			| lower
+			| nonempty
+			| position
+			| rules
+			| separator
+			| stop
+			| terminator
+			| token
+			| toplevel
+			| upper
+			) \\b
+		"""
+
+
+	# Quoted stuff
+	literals:
+		patterns: [{
+			# String literal: "XYZ"
+			name:  "string.quoted.double.lbnf"
+			begin: '"'
+			end:   '"'
+			beginCaptures: 0: name: "punctuation.definition.string.begin.lbnf"
+			endCaptures:   0: name: "punctuation.definition.string.end.lbnf"
+			patterns: [{
+				name: "constant.character.escape.quote.lbnf"
+				match: '\\\\"'
+			}]
+		},{
+			# Character literal: 'X' 'Y' 'Z'
+			name:  "string.quoted.single.lbnf"
+			match: "(').(')"
+			captures:
+				1: name: "punctuation.definition.string.begin.lbnf"
+				2: name: "punctuation.definition.string.end.lbnf"
+		}]
