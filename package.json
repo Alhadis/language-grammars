@@ -3,8 +3,9 @@
 	"version": "1.0.2",
 	"description": "Syntax highlighting for ABNF/BNF/EBNF, Yacc, and other language-related languages.",
 	"repository": "https://github.com/Alhadis/language-grammars",
+	"homepage": "https://atom.io/packages/language-grammars",
 	"author": "John Gardner <gardnerjohng@gmail.com>",
 	"license": "ISC",
-	"keywords": ["ABNF", "BNF", "EBNF", "Yacc", "Bison", "Grammars", "Flex", "Lex", "Augmented", "Backus-Naur", "ISO/IEC 14977"],
+	"keywords": ["ABNF", "BNF", "EBNF", "LBNF", "Lark", "Yacc", "Bison", "Grammars", "Flex", "Lex", "Augmented", "Backus-Naur", "ISO/IEC 14977"],
 	"engines": {"atom": "*"}
 }
