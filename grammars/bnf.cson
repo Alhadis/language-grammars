@@ -34,13 +34,13 @@ repository:
 	
 	rule:
 		name:  "meta.rule.bnf"
-		begin: "(?=<)"
-		end:   "$|(?=;)"
+		begin: "^\\s*(?=<)"
+		end:   "(?!\\G)(?=^\\s*<)"
 		patterns: [{
 			# Term/rule name
 			name:  "meta.lhs.bnf"
 			begin: "\\G<"
-			end:   ">|(?=$|;)"
+			end:   ">|(?=^\\s*<)"
 			contentName: "entity.name.rule.identifier.bnf"
 			beginCaptures: 0: name: "punctuation.definition.angle.bracket.begin.bnf"
 			endCaptures:   0: name: "punctuation.definition.angle.bracket.end.bnf"
@@ -48,7 +48,7 @@ repository:
 			# Definition
 			name:  "meta.rhs.bnf"
 			begin: "::="
-			end:   "(?=$|;)"
+			end:   "(?=^\\s*<)"
 			beginCaptures:
 				0: name: "keyword.operator.assignment.bnf"
 			patterns: [include: "#rhs"]
@@ -114,4 +114,4 @@ repository:
 			end:   "'"
 			beginCaptures: 0: name: "punctuation.definition.string.begin.bnf"
 			endCaptures:   0: name: "punctuation.definition.string.end.bnf"
-		}]
+		}, include: "#comment"]
