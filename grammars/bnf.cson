@@ -54,8 +54,9 @@ repository:
 			patterns: [include: "#rhs"]
 		}]
 
-	# Stuff included in the right-hand half of a production rule
-	rhs:
+	
+	# Quantifiers and logical operators
+	operators:
 		patterns: [{
 			# Alternation (pipe)
 			name: "keyword.operator.logical.or.alternation.pipe.bnf"
@@ -72,6 +73,13 @@ repository:
 			# Repetition: 1 or more
 			name: "keyword.operator.logical.repetition.plus.bnf"
 			match: "\\+"
+		}]
+
+
+	# Stuff included in the right-hand half of a production rule
+	rhs:
+		patterns: [{
+			include: "#operators"
 		},{
 			# [ Optional ]
 			name:  "meta.optional.bnf"

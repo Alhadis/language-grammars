@@ -7,11 +7,41 @@ repository:
 	main:
 		patterns: [
 			{include: "#comments"}
+			{include: "#list"}
+			{include: "#label"}
+			{include: "#category"}
+			{include: "#pragmas"}
 			{include: "#definition"}
-			{include: "#literals"}
+			{include: "#rhs"}
 		]
 
 
+	# { Braced region }
+	braces:
+		name:  "meta.braces.lbnf"
+		begin: "{"
+		end:   "}"
+		beginCaptures: 0: name: "punctuation.definition.curly.bracket.begin.lbnf"
+		endCaptures:   0: name: "punctuation.definition.curly.bracket.end.lbnf"
+		patterns: [include: "#rhs"]
+		
+
+	# Definition category
+	category:
+		match: "(?:(?<=\\.)|(?<=\\[)\\G)\\s*((?!\\d)\\w+)"
+		captures:
+			1: name: "entity.name.tag.category.lbnf"
+
+	
+	# Single character: 'c'
+	character:
+		name: "string.quoted.single.character.lbnf"
+		match: "(').(')"
+		captures:
+			1: name: "punctuation.definition.string.begin.lbnf"
+			2: name: "punctuation.definition.string.end.lbnf"
+
+	
 	# Comments
 	comments:
 		patterns: [{
@@ -31,52 +61,83 @@ repository:
 		}]
 
 
-	# Something quacking like a rule definition
+	# … ::= … [Defs]
 	definition:
-		# [internal] <Label> . <Def> ;
 		name:  "meta.definition.lbnf"
-		begin: "(?:\\G|^)\\s*(?:(internal)\\s+)?(_|:|[A-Za-z][A-Za-z0-9_]*)\\s*(\\.)"
-		end:   "(?!\\G)(?=^\\s*[A-Za-z])|;"
+		begin: "::="
+		end:   "(?=;)"
 		beginCaptures:
-			1: name: "storage.modifier.internal.lbnf"
-			2: name: "entity.name.label.lbnf"
-			3: name: "punctuation.separator.label.lbnf"
-		endCaptures:
-			0: name: "punctuation.terminator.statement.semicolon.lbnf"
+			0: name: "keyword.operator.assignment.lbnf"
+		patterns: [include: "#rhs"]
+
+
+	#  <Label> . …
+	label:
+		match: "(?:(?:^\|\\G)\\s*(?!\\d)(\\w+)\\s*|(?<=\\]|\\))\\s*)(\\.)"
+		captures:
+			1: name: "entity.name.label.lbnf"
+			2: name: "keyword.operator.label-separator.lbnf"
+
+
+	# Stuff inside [Square brackets] or (Round brackets)
+	list:
 		patterns: [{
-			# Skip blank lines
-			begin: "\\G(?=\\s*$)"
-			end:   "(?=\\S)"
+			# Cons rule label: (:)
+			name:  "meta.list.cons-rule.lbnf"
+			match: "(\\()(:)(\\))"
+			captures:
+				1: name: "punctuation.section.round.bracket.begin.lbnf"
+				2: patterns: [include: "#misc-operators"]
+				3: name: "punctuation.section.round.bracket.end.lbnf"
 		},{
-			include: "#keywords"
+			# One-element list: (:[])
+			name:  "meta.list.one-element.lbnf"
+			match: "(\\()(:)(\\[\\])(\\))"
+			captures:
+				1: name: "punctuation.section.round.bracket.begin.lbnf"
+				2: patterns: [include: "#misc-operators"]
+				3: patterns: [include: "#list-empty"]
+				4: name: "punctuation.section.round.bracket.end.lbnf"
 		},{
-			# Left-hand side: …<Category>…
-			name:  "meta.lhs.lbnf"
-			begin: "[A-Za-z][A-Za-z0-9_]*"
-			end:   "(?!\\G)(?=^\\s*[A-Za-z])|(?=::=|;)"
-			beginCaptures:
-				0: name: "storage.type.class.category.lbnf"
-			patterns: [include: "#comments"]
+			# Nil rule label: []
+			include: "#list-empty"
 		},{
-			# Production rule: … ::=
-			begin: "::="
-			end:   "(?=;)"
-			beginCaptures:
-				0: name: "keyword.operator.assignment.ebnf"
-			contentName: "meta.rhs.lbnf"
-			patterns: [include: "#rhs"]
+			# [Category]
+			name:  "meta.list.lbnf"
+			begin: "\\["
+			end:   "\\]"
+			beginCaptures: 0: name: "punctuation.section.group.square.bracket.begin.lbnf"
+			endCaptures:   0: name: "punctuation.section.group.square.bracket.end.lbnf"
+			patterns: [include: "#list-innards"]
+		},{
+			# (Parenthetical list)
+			name:  "meta.list.parenthetical.lbnf"
+			begin: "\\("
+			end:   "\\)"
+			beginCaptures: 0: name: "punctuation.section.round.bracket.begin.lbnf"
+			endCaptures:   0: name: "punctuation.section.round.bracket.end.lbnf"
+			patterns: [include: "#list-innards"]
 		}]
 
+	"list-empty":
+		name:  "meta.list.empty.lbnf"
+		match: "(\\[)(\\])"
+		captures:
+			1: name: "punctuation.section.group.square.bracket.begin.lbnf"
+			2: name: "punctuation.section.group.square.bracket.end.lbnf"
 
-	# Identifier
-	ident:
-		name: "variable.parameter.identifier.lbnf"
-		match: "[A-Za-z][A-Za-z0-9_]*"
+	"list-innards":
+		patterns: [
+			{include: "#reference"}
+			{include: "#comments"}
+			{include: "#list"}
+			{include: "#rhs"}
+		]
 
 
-	# Reserved words
-	keywords:
-		name:  "keyword.operator.eserved-word.$1.lbnf"
+	# Reserved keywords
+	"misc-keywords":
+		name: "keyword.operator.reserved-word.$1.lbnf"
 		match: """(?x) \\b
 			( char
 			| coercions
@@ -100,25 +161,99 @@ repository:
 			) \\b
 		"""
 
+	
+	# Assorted symbols
+	"misc-operators":
+		patterns: [
+			{match: ":", name: "punctuation.definition.cons-rule.colon.lbnf"}
+			{match: ",", name: "punctuation.delimiter.comma.lbnf"}
+			{match: "-", name: "keyword.operator.arithmetic.subtraction.lbnf"}
+		]
 
-	# Quoted stuff
-	literals:
+
+	# Integer or floating-point value
+	number:
+		name: "constant.numeric.decimal.lbnf"
+		match: "-?\\d+(?:\\.\\d+)?"
+
+
+	# Pragmas
+	pragmas:
 		patterns: [{
-			# String literal: "XYZ"
-			name:  "string.quoted.double.lbnf"
-			begin: '"'
-			end:   '"'
-			beginCaptures: 0: name: "punctuation.definition.string.begin.lbnf"
-			endCaptures:   0: name: "punctuation.definition.string.end.lbnf"
-			patterns: [{
-				name: "constant.character.escape.quote.lbnf"
-				match: '\\\\"'
-			}]
+			# rules Type ::= … ;
+			name:  "meta.praga.$1.lbnf"
+			begin: "(?:^|\\G)\\s*(rules)\\s+(\\w+)\\s*(?=::=)"
+			end:   "(?=;)"
+			beginCaptures:
+				1: name: "keyword.control.directive.pragma.$1.lbnf"
+				2: name: "entity.name.type.lbnf"
+			patterns: [include: "#definition"]
 		},{
-			# Character literal: 'X' 'Y' 'Z'
-			name:  "string.quoted.single.lbnf"
-			match: "(').(')"
-			captures:
-				1: name: "punctuation.definition.string.begin.lbnf"
-				2: name: "punctuation.definition.string.end.lbnf"
+			# comment "/*" "*/" ;
+			name:  "meta.pragma.comment-syntax.lbnf"
+			begin: "(?:^|\\G)\\s*(comment)(?=\\s|$)"
+			end:   "(?=;|$)"
+			beginCaptures:
+				1: name: "keyword.control.directive.pragma.$1-syntax.lbnf"
+			patterns: [include: "#rhs"]
+		},{
+			# Everything else
+			name: "meta.pragma.$1.lbnf"
+			begin: """(?x) (?:^|\\G)\\s*
+				( coercions
+				| entrypoints
+				| layout (?:\\s+(stop|toplevel))?
+				| (position\\s+)? token
+				| rules
+				| separator
+				| terminator
+				) (?=\\s|$)
+			"""
+			end: "$|(?=;)"
+			beginCaptures:
+				1: name: "keyword.control.directive.pragma.$1.lbnf"
+				2: name: "keyword.control.layout-command.lbnf"
+			patterns: [include: "#rhs"]
+		}]
+
+
+	# Stuff matched after `::=`
+	rhs:
+		patterns: [
+			{include: "#string"}
+			{include: "#character"}
+			{include: "#semicolon"}
+			{include: "#misc-keywords"}
+			{include: "#misc-operators"}
+			{include: "#reference"}
+			{include: "#list"}
+			{include: "source.bnf#operators"}
+			{include: "#number"}
+			{include: "#comments"}
+			{include: "#braces"}
+		]
+
+
+	# Reference to a named definition
+	reference:
+		name: "entity.name.tag.reference.lbnf"
+		match: "(?!\\d)\\w+"
+
+
+	# Terminator character
+	semicolon:
+		name: "punctuation.terminator.statement.semicolon.lbnf"
+		match: ";"
+
+
+	# "Double-quoted string"
+	string:
+		name:  "string.quoted.double.lbnf"
+		begin: '"'
+		end:   '"'
+		beginCaptures: 0: name: "punctuation.definition.string.begin.lbnf"
+		endCaptures:   0: name: "punctuation.definition.string.end.lbnf"
+		patterns: [{
+			name: "constant.character.escape.quote.lbnf"
+			match: '\\\\"'
 		}]

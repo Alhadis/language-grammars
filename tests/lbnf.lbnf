@@ -1,0 +1,136 @@
+{- Source: https://github.com/BNFC/bnfc/blob/master/docs/lbnf.rst -}
+
+EPlus. Expr   ::= Expr "+" Number ;
+ENum.  Expr   ::= Number ;
+NOne.  Number ::= "1" ;
+
+Ident "." Ident "::=" (Ident | String)* ";"
+
+
+Char_a. Char ::= "a" ;
+Char_b. Char ::= "b" ;
+
+Stm ::= Stm ";" ;
+
+
+_ . Stm ::= Stm ";" ;
+
+Exp2 ::= Integer ;
+Exp1 ::= Exp1 "*" Exp2 ;
+Exp  ::= Exp  "+" Exp1 ;
+
+Exp2 ::= "(" Exp ")" ;
+Exp1 ::= Exp2 ;
+Exp  ::= Exp1 ;
+
+EInt.   Exp2 ::= Integer ;
+ETimes. Exp1 ::= Exp1 "*" Exp2 ;
+EPlus.  Exp  ::= Exp  "+" Exp1 ;
+
+_.      Exp2 ::= "(" Exp ")" ;
+_.      Exp1 ::= Exp2 ;
+_.      Exp  ::= Exp1 ;
+
+
+NilDef.  ListDef ::= ;
+ConsDef. ListDef ::= Def ";" ListDef ;
+
+[].  [Def] ::= ;
+(:). [Def] ::= Def ";" [Def] ;
+
+token UIdent (upper (letter | digit | '_')*) ;
+
+position token PIdent (letter (letter|digit|'_'|'\'')*) ;
+
+comment "//" ;
+comment "/*" "*/" ;
+
+internal EVarT. Exp ::= "(" Ident ":" Type ")";
+
+entrypoints Stm, Exp2, [Ident];
+
+terminator Stm ";" ;
+
+[].    [Stm] ::= ;
+(:).   [Stm] ::= Stm ";" [Stm] ;
+
+terminator nonempty Stm ";" ;
+
+(:[]). [Stm] ::= Stm ";" ;
+(:).   [Stm] ::= Stm ";" [Stm] ;
+
+terminator Stm "" ;
+
+[].    [Stm] ::= ;
+(:).   [Stm] ::= Stm [Stm] ;
+
+separator Stm ";" ;
+
+[].    [Stm] ::= ;
+(:[]). [Stm] ::= Stm ;
+(:).   [Stm] ::= Stm ";" [Stm] ;
+
+separator nonempty Stm ";" ;
+
+(:[]). [Stm]  ::= Stm            ;
+(:).   [Stm]  ::= Stm ";" [Stm]  ;
+[].    [Stm]  ::=                ;
+_.     [Stm]  ::= [Stm]1         ;
+(:[]). [Stm]1 ::= Stm            ;
+(:).   [Stm]1 ::= Stm ";" [Stm]1 ;
+
+coercions Exp 3 ;
+
+
+_.    Exp  ::= Exp1 ;
+_.    Exp1 ::= Exp2 ;
+_.    Exp2 ::= Exp3 ;
+_.    Exp3 ::= "(" Exp ")" ;
+EInt. Exp2 ::= Integer;
+EAdd. Exp1 ::= Exp1 "+" Exp2;
+
+separator Exp  "," ;
+separator Exp2 ";" ;
+
+rules Type ::= Type "[" Integer "]" | "float" | "double" | Type "*" | Ident ;
+
+Type1.       Type ::= Type "[" Integer "]" ;
+Type_float.  Type ::= "float" ;
+Type_double. Type ::= "double" ;
+Type2.       Type ::= Type "*" ;
+TypeIdent.   Type ::= Ident ;
+
+[]        . [Stm] ::= ;
+(:)       . [Stm] ::= Stm ";" [Stm] ;
+[]        . [Stm] ::= ;
+(flip (:)). [Stm] ::= [Stm] Stm ";" ;
+
+[]  . [C] ::= ;
+(:) . [C] ::= C x [C] ;
+
+char
+coercions
+comment
+digit
+entrypoints
+eps
+internal
+layout
+letter
+lower
+nonempty
+position
+rules
+separator
+stop
+terminator
+token
+toplevel
+upper
+
+; . ::=
+[ ] _
+( : )
+, | -
+* + ?
+{ }

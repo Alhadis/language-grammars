@@ -1,20 +1,20 @@
 {-
-    BNF Converter: Language definition
-    Copyright (C) 2004  Author: Markus Forberg, Michael Pellauer, Aarne Ranta
+	BNF Converter: Language definition
+	Copyright (C) 2004  Author: Markus Forberg, Michael Pellauer, Aarne Ranta
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1335, USA
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1335, USA
 -}
 
 -- A Grammar is a sequence of definitions
@@ -53,7 +53,6 @@ ListOne  . LabelId ::= "(" ":" "[" "]" ")" ;
 
 -- Profiles (= permutation and binding patterns)
 ProfIt   . ProfItem ::= "(" "[" [IntList] "]" "," "[" [Integer] "]" ")" ;
-
 Ints     . IntList ::= "[" [Integer] "]" ;
 
 separator Integer "," ;
@@ -61,44 +60,41 @@ separator IntList "," ;
 terminator nonempty ProfItem "" ;
 
 -- Pragmas
-Comment  .  Def ::= "comment" String ;
-Comments .  Def ::= "comment" String String ;
-Internal .  Def ::= "internal" Label "." Cat "::=" [Item] ;
-Token.      Def ::= "token" Ident Reg ;
-PosToken.   Def ::= "position" "token" Ident Reg ;
-Entryp.     Def ::= "entrypoints" [Ident] ;
-Separator.  Def ::= "separator" MinimumSize Cat String ;
-Terminator. Def ::= "terminator" MinimumSize Cat String ;
-Coercions.  Def ::= "coercions" Ident Integer ;
-Rules.      Def ::= "rules" Ident "::=" [RHS] ;
-
-Layout.     Def ::= "layout" [String] ;
-LayoutStop. Def ::= "layout" "stop" [String] ;
-LayoutTop.  Def ::= "layout" "toplevel" ;
+Comment    . Def ::= "comment" String ;
+Comments   . Def ::= "comment" String String ;
+Internal   . Def ::= "internal" Label "." Cat "::=" [Item] ;
+Token      . Def ::= "token" Ident Reg ;
+PosToken   . Def ::= "position" "token" Ident Reg ;
+Entryp     . Def ::= "entrypoints" [Ident] ;
+Separator  . Def ::= "separator" MinimumSize Cat String ;
+Terminator . Def ::= "terminator" MinimumSize Cat String ;
+Coercions  . Def ::= "coercions" Ident Integer ;
+Rules      . Def ::= "rules" Ident "::=" [RHS] ;
+Layout     . Def ::= "layout" [String] ;
+LayoutStop . Def ::= "layout" "stop" [String] ;
+LayoutTop  . Def ::= "layout" "toplevel" ;
 
 separator nonempty String "," ;
-
 separator nonempty RHS "|" ;
-MkRHS. RHS ::= [Item] ;
+
+MkRHS . RHS ::= [Item] ;
 
 -- List size condition
 MNonempty.  MinimumSize ::= "nonempty" ;
 MEmpty.     MinimumSize ::=  ;
 
 -- Regular expressions
-RSeq.   Reg2 ::= Reg2 Reg3 ;
-RAlt.   Reg1 ::= Reg1 "|" Reg2 ;
-RMinus. Reg1 ::= Reg2 "-" Reg2 ;
+RSeq.    Reg2 ::= Reg2 Reg3 ;
+RAlt.    Reg1 ::= Reg1 "|" Reg2 ;
+RMinus.  Reg1 ::= Reg2 "-" Reg2 ;
+RStar.   Reg3 ::= Reg3 "*" ;
+RPlus.   Reg3 ::= Reg3 "+" ;
+ROpt.    Reg3 ::= Reg3 "?" ;
+REps.    Reg3 ::= "eps" ;
 
-RStar.  Reg3 ::= Reg3 "*" ;
-RPlus.  Reg3 ::= Reg3 "+" ;
-ROpt.   Reg3 ::= Reg3 "?" ;
-
-REps.   Reg3 ::= "eps" ;
-
-RChar.  Reg3 ::= Char ;           -- Single character
-RAlts.  Reg3 ::= "[" String "]" ; -- List of alternative characters
-RSeqs.  Reg3 ::= "{" String "}" ; -- Character sequence
+RChar.   Reg3 ::= Char ;           -- Single character
+RAlts.   Reg3 ::= "[" String "]" ; -- List of alternative characters
+RSeqs.   Reg3 ::= "{" String "}" ; -- Character sequence
 
 RDigit.  Reg3 ::= "digit" ;
 RLetter. Reg3 ::= "letter" ;
@@ -106,10 +102,10 @@ RUpper.  Reg3 ::= "upper" ;
 RLower.  Reg3 ::= "lower" ;
 RAny.    Reg3 ::= "char" ;
 
-_. Reg  ::= Reg1 ;
-_. Reg1 ::= Reg2 ;
-_. Reg2 ::= Reg3 ;
-_. Reg3 ::= "(" Reg ")" ;
+_ . Reg  ::= Reg1 ;
+_ . Reg1 ::= Reg2 ;
+_ . Reg2 ::= Reg3 ;
+_ . Reg3 ::= "(" Reg ")" ;
 
 -- List of categories in the entrypoint pragma
 (:[]).  [Ident] ::= Ident ;
