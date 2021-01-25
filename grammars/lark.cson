@@ -3,35 +3,35 @@ scopeName: "source.lark"
 fileTypes: ["lark"]
 patterns: [{
 	# Interpreter directive
-	name:  "comment.line.number-sign.shebang.lark"
+	name: "comment.line.number-sign.shebang.lark"
 	begin: "\\A#!"
-	end:   "$"
+	end: "$"
 	beginCaptures:
 		0: name: "punctuation.definition.comment.shebang.lark"
 }, include: "#main"]
 firstLineMatch: """(?ix)
-	
-	# Hashbang
-	^\\#!.*(?:\\s|\\/|(?<=!)\\b)
-		(?-i:lark)
-	(?:$|\\s)
-	
-	|
-	
-	# Emacs modeline
-	-\\*-(?:\\s*(?=[^:;\\s]+\\s*-\\*-)|(?:.*?[;\\s]|(?<=-\\*-))mode\\s*:\\s*)
-		lark
-	(?=[\\s;]|(?<![-*])-\\*-).*?-\\*-
-	
-	|
-	
-	# Vim modeline
-	(?:(?:\\s|^)vi(?:m[<=>]?\\d+|m)?|\\sex)(?=:(?=\\s*set?\\s[^\\n:]+:)|:(?!\\s* set?\\s))
-	(?:(?:\\s|\\s*:\\s*)\\w*(?:\\s*=(?:[^\\n\\\\\\s]|\\\\.)*)?)*[\\s:]
-	(?:filetype|ft|syntax)\\s*=
-		lark
-	(?=\\s|:|$)
-"""
+
+                	# Hashbang
+                	^\\#!.*(?:\\s|\\/|(?<=!)\\b)
+                		(?-i:lark)
+                	(?:$|\\s)
+
+                	|
+
+                	# Emacs modeline
+                	-\\*-(?:\\s*(?=[^:;\\s]+\\s*-\\*-)|(?:.*?[;\\s]|(?<=-\\*-))mode\\s*:\\s*)
+                		lark
+                	(?=[\\s;]|(?<![-*])-\\*-).*?-\\*-
+
+                	|
+
+                	# Vim modeline
+                	(?:(?:\\s|^)vi(?:m[<=>]?\\d+|m)?|\\sex)(?=:(?=\\s*set?\\s[^\\n:]+:)|:(?!\\s* set?\\s))
+                	(?:(?:\\s|\\s*:\\s*)\\w*(?:\\s*=(?:[^\\n\\\\\\s]|\\\\.)*)?)*[\\s:]
+                	(?:filetype|ft|syntax)\\s*=
+                		lark
+                	(?=\\s|:|$)
+                """
 
 repository:
 	main:
@@ -45,7 +45,7 @@ repository:
 
 	# Name of the preceding pattern
 	alias:
-		name:  "meta.alias.lark"
+		name: "meta.alias.lark"
 		match: "(->)\\s*((!?[_?]|!)?[a-zA-Z][_a-zA-Z0-9]*)?"
 		captures:
 			1: name: "storage.type.alias.lark"
@@ -61,9 +61,9 @@ repository:
 
 	# C++-style comment
 	comment:
-		name:  "comment.line.double-slash.lark"
+		name: "comment.line.double-slash.lark"
 		begin: "//"
-		end:   "$"
+		end: "$"
 		beginCaptures:
 			0: name: "punctuation.definition.comment.lark"
 
@@ -72,9 +72,9 @@ repository:
 	definition:
 		patterns: [{
 			# Terminal
-			name:  "meta.definition.terminal.lark"
+			name: "meta.definition.terminal.lark"
 			begin: "^\\s*((!?[_?]|!)?[A-Z][_A-Z0-9]*)\\s*(\\.[-+.\\d]+\\s*)?(:)"
-			end:   "(?!\\G|^\\s*$)(?=^\\s*[^\\s|])"
+			end: "(?!\\G|^\\s*$)(?=^\\s*[^\\s|])"
 			beginCaptures:
 				1: name: "entity.name.terminal.lark"
 				2: patterns: [include: "#name-prefix"]
@@ -83,9 +83,9 @@ repository:
 			patterns: [include: "#definition-innards"]
 		},{
 			# Rule
-			name:  "meta.definition.rule.lark"
+			name: "meta.definition.rule.lark"
 			begin: "^\\s*((!?[_?]|!)?[a-z][_a-z0-9]*)\\s*(\\.[-+.\\d]+\\s*)?(:)"
-			end:   "(?!\\G|^\\s*$)(?=^\\s*[^\\s|])"
+			end: "(?!\\G|^\\s*$)(?=^\\s*[^\\s|])"
 			beginCaptures:
 				1: name: "entity.name.rule.lark"
 				2: patterns: [include: "#name-prefix"]
@@ -107,7 +107,8 @@ repository:
 			{include: "#flags"}
 			{include: "#range"}
 			{include: "#template-usage"}
-			{include: "#name"}
+			{include: "#rule"}
+			{include: "#terminal"}
 			{include: "#comma"}
 		]
 
@@ -116,21 +117,22 @@ repository:
 	directives:
 		patterns: [{
 			# %import
-			name:  "meta.directive.import.lark"
+			name: "meta.directive.import.lark"
 			begin: "(?:^|\\G)\\s*((%)import)(?=\\s|$)"
-			end:   "$"
+			end: "$"
 			beginCaptures:
 				1: name: "keyword.control.directive.import.lark"
 				2: name: "punctuation.definition.directive.lark"
 			patterns: [{
-				name:  "meta.import-specification.lark"
+				name: "meta.import-specification.lark"
 				begin: "\\G\\s+(\\.?\\w+(?:\\.\\w+)*+)(?=\\s|$)[ \\t]*"
-				end:   "(?=$)"
+				end: "(?=$)"
 				beginCaptures:
 					0: name: "meta.module-reference.lark"
 					1: name: "string.unquoted.module.import.lark", patterns: [
 						{include: "#dot"}
-						{include: "#name"}
+						{include: "#rule"}
+						{include: "#terminal"}
 					]
 				patterns: [
 					{include: "#alias"}
@@ -140,9 +142,9 @@ repository:
 			}, include: "#comment"]
 		},{
 			# Anything else
-			name:  "meta.directive.$3.lark"
+			name: "meta.directive.$3.lark"
 			begin: "(?:^|\\G)\\s*((%)(?!_)([A-Za-z_]+))(?=\\s|$)"
-			end:   "(?!\\G|^\\s*$)(?=^\\s*[^\\s|])"
+			end: "(?!\\G|^\\s*$)(?=^\\s*[^\\s|])"
 			beginCaptures:
 				1: name: "keyword.control.directive.$3.lark"
 				2: name: "punctuation.definition.directive.lark"
@@ -158,7 +160,7 @@ repository:
 
 	# Modifier flags affixed to a regexp/string
 	flags:
-		name:  "storage.modifier.flags.lark"
+		name: "storage.modifier.flags.lark"
 		match: '(?<=/|")[imslux]+'
 
 
@@ -166,40 +168,47 @@ repository:
 	groups:
 		patterns: [{
 			# (Round brackets)
-			name:  "meta.group.lark"
+			name: "meta.group.lark"
 			begin: "\\("
-			end:   "\\)"
+			end: "\\)"
 			beginCaptures: 0: name: "punctuation.section.group.round.bracket.begin.lark"
-			endCaptures:   0: name: "punctuation.section.group.round.bracket.end.lark"
+			endCaptures: 0: name: "punctuation.section.group.round.bracket.end.lark"
 			patterns: [include: "#definition-innards"]
 		},{
 			# [Square brackets]
-			name:  "meta.group.lark"
+			name: "meta.group.lark"
 			begin: "\\["
-			end:   "\\]"
+			end: "\\]"
 			beginCaptures: 0: name: "punctuation.section.group.square.bracket.begin.lark"
-			endCaptures:   0: name: "punctuation.section.group.square.bracket.end.lark"
+			endCaptures: 0: name: "punctuation.section.group.square.bracket.end.lark"
 			patterns: [include: "#definition-innards"]
 		}]
 
 
 	# Reference to another definition
-	name:
-		name: "variable.definition.reference.lark"
-		match: "(!?[_?]|!)?(?:[A-Z][_A-Z0-9]*|[a-z][_a-z0-9]*)"
+	rule:
+		name: "variable.definition.rule.lark"
+		match: "(!?[_?]|!)?(?:[a-z][_a-z0-9]*)"
+		captures:
+			1: patterns: [include: "#name-prefix"]
+				terminal:
+		name: "variable.definition.terminal.lark"
+		match: "(!?[_?]|!)?(?:[A-Z][_A-Z0-9]*)"
 		captures:
 			1: patterns: [include: "#name-prefix"]
 
 
+
 	# Bracketed list of definition names: (foo, bar, …)
 	"name-list":
-		name:  "meta.name-list.lark"
+		name: "meta.name-list.lark"
 		begin: "\\G\\s*(\\()"
-		end:   "\\)"
+		end: "\\)"
 		beginCaptures: 1: name: "punctuation.definition.name-list.round.bracket.begin.lark"
-		endCaptures:   0: name: "punctuation.definition.name-list.round.bracket.end.lark"
+		endCaptures: 0: name: "punctuation.definition.name-list.round.bracket.end.lark"
 		patterns: [
-			{include: "#name"}
+			{include: "#rule"}
+			{include: "#terminal"}
 			{include: "#comma"}
 			{include: "#comment"}
 		]
@@ -215,7 +224,7 @@ repository:
 
 	# Integer or floating-point value (Source: `common.lark`)
 	number:
-		name:  "constant.numeric.decimal.lark"
+		name: "constant.numeric.decimal.lark"
 		match: "-?\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?"
 
 
@@ -243,9 +252,9 @@ repository:
 
 	# Priority level
 	priority:
-		name:  "meta.priority.lark"
+		name: "meta.priority.lark"
 		begin: "(?:\\G|^)\\."
-		end:   "$|(?=:)"
+		end: "$|(?=:)"
 		beginCaptures:
 			0: patterns: [include: "#dot"]
 		patterns: [include: "#number"]
@@ -259,29 +268,29 @@ repository:
 
 	# Regular expression, taken directly from Lark's own grammar
 	regexp:
-		name:  "string.regexp.lark"
+		name: "string.regexp.lark"
 		begin: "/(?!/)"
-		end:   "/"
+		end: "/"
 		beginCaptures: 0: name: "punctuation.definition.string.begin.lark"
-		endCaptures:   0: name: "punctuation.definition.string.end.lark"
+		endCaptures: 0: name: "punctuation.definition.string.end.lark"
 		patterns: [include: "source.regexp.python"]
 
 
 	# "Quoted string"
 	string:
-		name:  "string.quoted.double.lark"
+		name: "string.quoted.double.lark"
 		begin: '"'
-		end:   '"'
+		end: '"'
 		beginCaptures: 0: name: "punctuation.definition.string.begin.lark"
-		endCaptures:   0: name: "punctuation.definition.string.end.lark"
+		endCaptures: 0: name: "punctuation.definition.string.end.lark"
 		patterns: [match: "\\\\.", name: "constant.character.escape.lark"]
 
 
 	# template{arg1, arg2}: <EBNF_EXPRESSION>
 	template:
-		name:  "meta.definition.template.lark"
+		name: "meta.definition.template.lark"
 		begin: "^\\s*((!?[_?]|!)?\\w+)\\s*(?={.*?}\\s*:)"
-		end:   "(?!\\G|^\\s*$)(?=^\\s*[^\\s|])"
+		end: "(?!\\G|^\\s*$)(?=^\\s*[^\\s|])"
 		beginCaptures:
 			1: name: "entity.name.template.function.lark"
 			2: patterns: [include: "#name-prefix"]
@@ -293,9 +302,9 @@ repository:
 
 	# Template arguments
 	"template-args":
-		name:  "meta.function.parameters.lark"
+		name: "meta.function.parameters.lark"
 		begin: "\\G\\s*({)"
-		end:   "(})(?:\\s*(:))?|(?=\\s*$)"
+		end: "(})(?:\\s*(:))?|(?=\\s*$)"
 		beginCaptures:
 			1: name: "punctuation.definition.parameters.begin.lark"
 		endCaptures:
@@ -310,9 +319,9 @@ repository:
 
 	# Template expansion
 	"template-usage":
-		name:  "meta.function-call.lark"
+		name: "meta.function-call.lark"
 		begin: "((!?[_?]|!)?\\w+)\\s*(?={)"
-		end:   "(?!\\G)"
+		end: "(?!\\G)"
 		beginCaptures:
 			1: name: "entity.name.template.function.lark"
 			2: patterns: [include: "#name-prefix"]
