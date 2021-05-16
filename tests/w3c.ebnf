@@ -1,0 +1,139 @@
+/* An FTL file defines a Resource consisting of Entries. */
+Resource            ::= (Entry | blank_block | Junk)*
+
+/* Entries are the main building blocks of Fluent. They define translations and
+ * contextual and semantic information about the translations. During the AST
+ * construction, adjacent comment lines of the same comment type (defined by
+ * the number of #) are joined together. Single-# comments directly preceding
+ * Messages and Terms are attached to the Message or Term and are not
+ * standalone Entries. */
+Entry               ::= (Message line_end)
+                      | (Term line_end)
+                      | CommentLine
+Message             ::= Identifier blank_inline? "=" blank_inline? ((Pattern Attribute*) | (Attribute+))
+Term                ::= "-" Identifier blank_inline? "=" blank_inline? Pattern Attribute*
+
+/* Adjacent comment lines of the same comment type are joined together during
+ * the AST construction. */
+CommentLine         ::= ("###" | "##" | "#") ("\u0020" comment_char*)? line_end
+comment_char        ::= any_char - line_end
+
+/* Junk represents unparsed content.
+ *
+ * Junk is parsed line-by-line until a line is found which looks like it might
+ * be a beginning of a new message, term, or a comment. Any whitespace
+ * following a broken Entry is also considered part of Junk.
+ */
+Junk                ::= junk_line (junk_line - "#" - "-" - [a-zA-Z])*
+junk_line           ::= /[^\n]*/ ("\u000A" | EOF)
+
+/* Attributes of Messages and Terms. */
+Attribute           ::= line_end blank? "." Identifier blank_inline? "=" blank_inline? Pattern
+
+/* Patterns are values of Messages, Terms, Attributes and Variants. */
+Pattern             ::= PatternElement+
+
+/* TextElement and Placeable can occur inline or as block.
+ * Text needs to be indented and start with a non-special character.
+ * Placeables can start at the beginning of the line or be indented.
+ * Adjacent TextElements are joined in AST creation. */
+PatternElement      ::= inline_text
+                      | block_text
+                      | inline_placeable
+                      | block_placeable
+inline_text         ::= text_char+
+block_text          ::= blank_block blank_inline indented_char inline_text?
+inline_placeable    ::= "{" blank? (SelectExpression | InlineExpression) blank? "}"
+block_placeable     ::= blank_block blank_inline? inline_placeable
+
+/* Rules for validating expressions in Placeables and as selectors of
+ * SelectExpressions are documented in spec/valid.md and enforced in
+ * syntax/abstract.js. */
+InlineExpression    ::= StringLiteral
+                      | NumberLiteral
+                      | FunctionReference
+                      | MessageReference
+                      | TermReference
+                      | VariableReference
+                      | inline_placeable
+
+/* Literals */
+StringLiteral       ::= "\"" quoted_char* "\""
+NumberLiteral       ::= "-"? digits ("." digits)?
+
+/* Inline Expressions */
+FunctionReference   ::= Identifier CallArguments
+MessageReference    ::= Identifier AttributeAccessor?
+TermReference       ::= "-" Identifier AttributeAccessor? CallArguments?
+VariableReference   ::= "$" Identifier
+AttributeAccessor   ::= "." Identifier
+CallArguments       ::= blank? "(" blank? argument_list blank? ")"
+argument_list       ::= (Argument blank? "," blank?)* Argument?
+Argument            ::= NamedArgument
+                      | InlineExpression
+NamedArgument       ::= Identifier blank? ":" blank? (StringLiteral | NumberLiteral)
+
+/* Block Expressions */
+SelectExpression    ::= InlineExpression blank? "->" blank_inline? variant_list
+variant_list        ::= Variant* DefaultVariant Variant* line_end
+Variant             ::= line_end blank? VariantKey blank_inline? Pattern
+DefaultVariant      ::= line_end blank? "*" VariantKey blank_inline? Pattern
+VariantKey          ::= "[" blank? (NumberLiteral | Identifier) blank? "]"
+
+/* Identifier */
+Identifier          ::= [a-zA-Z] [a-zA-Z0-9_-]*
+
+/* Content Characters
+ *
+ * Translation content can be written using any Unicode characters. However,
+ * some characters are considered special depending on the type of content
+ * they're in. See text_char and quoted_char for more information.
+ *
+ * Some Unicode characters, even if allowed, should be avoided in Fluent
+ * resources. See spec/recommendations.md.
+ */
+any_char            ::= [\\u{0}-\\u{10FFFF}]
+
+/* Text elements
+ *
+ * The primary storage for content are text elements. Text elements are not
+ * delimited with quotes and may span multiple lines as long as all lines are
+ * indented. The opening brace ({) marks a start of a placeable in the pattern
+ * and may not be used in text elements verbatim. Due to the indentation
+ * requirement some text characters may not appear as the first character on a
+ * new line.
+ */
+special_text_char   ::= "{"
+                      | "}"
+text_char           ::= any_char - special_text_char - line_end
+indented_char       ::= text_char - "[" - "*" - "."
+
+/* String literals
+ *
+ * For special-purpose content, quoted string literals can be used where text
+ * elements are not a good fit. String literals are delimited with double
+ * quotes and may not contain line breaks. String literals use the backslash
+ * (\) as the escape character. The literal double quote can be inserted via
+ * the \" escape sequence. The literal backslash can be inserted with \\. The
+ * literal opening brace ({) is allowed in string literals because they may not
+ * comprise placeables.
+ */
+special_quoted_char ::= "\""
+                      | "\\"
+special_escape      ::= "\\" special_quoted_char
+unicode_escape      ::= ("\\u" /[0-9a-fA-F]{4}/)
+                      | ("\\U" /[0-9a-fA-F]{6}/)
+quoted_char         ::= (any_char - special_quoted_char - line_end)
+                      | special_escape
+                      | unicode_escape
+
+/* Numbers */
+digits              ::= [0-9]+
+
+/* Whitespace */
+blank_inline        ::= "\u0020"+
+line_end            ::= "\u000D\u000A"
+                      | "\u000A"
+                      | EOF
+blank_block         ::= (blank_inline? line_end)+
+blank               ::= (blank_inline | line_end)+

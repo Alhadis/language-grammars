@@ -29,13 +29,40 @@ repository:
 			{include: "#special"}
 		]
 	
-	# (* Comment *)
+	
+	# Punctuation that could mean anything
+	brackets:
+		patterns: [
+			{match: "\\[", name: "punctuation.definition.square.bracket.begin.ebnf"}
+			{match: "\\]", name: "punctuation.definition.square.bracket.end.ebnf"}
+			{match: "{",   name: "punctuation.definition.curly.bracket.begin.ebnf"}
+			{match: "}",   name: "punctuation.definition.curly.bracket.end.ebnf"}
+			{match: "\\(", name: "punctuation.definition.round.bracket.begin.ebnf"}
+			{match: "\\)", name: "punctuation.definition.round.bracket.end.ebnf"}
+		]
+	
+	
+	# Block comments
 	comment:
-		name:  "comment.block.ebnf"
-		begin: "\\(\\*"
-		end:   "\\*\\)"
-		beginCaptures: 0: name: "punctuation.definition.comment.begin.ebnf"
-		endCaptures:   0: name: "punctuation.definition.comment.end.ebnf"
+		patterns: [{
+			# (* ISO/IEC 14977 syntax *)
+			name:  "comment.block.iso14977.ebnf"
+			begin: "\\(\\*"
+			end:   "\\*\\)"
+			beginCaptures: 0: name: "punctuation.definition.comment.begin.ebnf"
+			endCaptures:   0: name: "punctuation.definition.comment.end.ebnf"
+		},{
+			# /* W3C/C-like syntax */
+			name:  "comment.block.w3c.ebnf"
+			begin: "^[ \\t]*((/\\*))"
+			end:   "\\*/"
+			beginCaptures:
+				1: name: "comment.block.w3c.ebnf"
+				2: name: "punctuation.definition.comment.begin.ebnf"
+			endCaptures:
+				0: name: "punctuation.definition.comment.end.ebnf"
+		}]
+		
 
 	
 	# Left-hand side
@@ -142,46 +169,24 @@ repository:
 			# "Terminals"
 			name:  "string.quoted.double.ebnf"
 			begin: '"'
-			end:   '"'
+			end:   '"(?!")|(?=^\\s+*\\S+?\\s+::{0,2}=\\s|\\s+\\|)'
 			beginCaptures: 0: name: "punctuation.definition.string.begin.ebnf"
 			endCaptures:   0: name: "punctuation.definition.string.end.ebnf"
 		},{
 			# 'Terminals'
 			name: "string.quoted.single.ebnf"
 			begin: "'"
-			end:   "'"
+			end:   "'(?!')|(?=^\\s+*\\S+?\\s+::{0,2}=\\s|\\s+\\|)"
 			beginCaptures: 0: name: "punctuation.definition.string.begin.ebnf"
 			endCaptures:   0: name: "punctuation.definition.string.end.ebnf"
 		},{
-			# [ Optional ]
-			name:  "meta.optional.ebnf"
-			begin: "\\["
-			end:   "\\]"
-			beginCaptures: 0: name: "punctuation.definition.square.bracket.begin.ebnf"
-			endCaptures:   0: name: "punctuation.definition.square.bracket.end.ebnf"
-			patterns: [include: "#rhs-innards"]
-		},{
-			# { Repetition }
-			name: "meta.repetition.ebnf"
-			begin: "{"
-			end:   "}"
-			beginCaptures: 0: name: "punctuation.definition.curly.bracket.begin.ebnf"
-			endCaptures:   0: name: "punctuation.definition.curly.bracket.end.ebnf"
-			patterns: [include: "#rhs-innards"]
-		},{
-			# ( Grouping )
-			name: "meta.group.ebnf"
-			begin: "\\("
-			end:   "\\)"
-			beginCaptures: 0: name: "punctuation.definition.round.bracket.begin.ebnf"
-			endCaptures:   0: name: "punctuation.definition.round.bracket.end.ebnf"
-			patterns: [include: "#rhs-innards"]
+			include: "#brackets"
 		},{
 			include: "#comment"
 		},{
 			# Rule reference
 			name: "variable.parameter.argument.identifier.reference.ebnf"
-			match: "[A-Za-z][A-Za-z0-9_-]*"
+			match: "\\b(?<!-)[A-Za-z][A-Za-z0-9_-]*"
 		},{
 			# (Non-standard) Negated pattern: !
 			name: "keyword.operator.logical.not.negation.non-standard.ebnf"
@@ -200,9 +205,9 @@ repository:
 
 	# ? Special stuff ?
 	special:
-		name:  "meta.pragma.directive.special.ebnf"
-		begin: "\\?"
-		end:   "\\?"
-		contentName: "support.constant.language.pragma.ebnf"
-		beginCaptures: 0: name: "keyword.operator.pragma.begin.ebnf"
-		endCaptures:   0: name: "keyword.operator.pragma.end.ebnf"
+		name:  "meta.pragma.directive.special.iso14977.ebnf"
+		match: "(?<=\\s|^)(\\?)(.+?)(?<=\\s)(\\?)(?=[,;]?(?:$|\\s))"
+		captures:
+			1: name: "keyword.operator.pragma.begin.ebnf"
+			2: name: "support.constant.language.pragma.ebnf"
+			3: name: "keyword.operator.pragma.end.ebnf"

@@ -6,6 +6,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [Unpublished]: ../../compare/v1.1.0...HEAD
 
 
+[Unpublished]
+------------------------------------------------------------------------
+* __Added:__ Improved support for [W3C-style][W3] EBNF
+
+[W3]: https://www.w3.org/TR/REC-xml/#sec-notation
+
+
+
 [v1.1.0]
 ------------------------------------------------------------------------
 **October 15th, 2020**  
