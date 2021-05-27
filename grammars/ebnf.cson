@@ -169,14 +169,14 @@ repository:
 			# "Terminals"
 			name:  "string.quoted.double.ebnf"
 			begin: '"'
-			end:   '"(?!")|(?=^\\s+*\\S+?\\s+::{0,2}=\\s|\\s+\\|)'
+			end:   '"(?!")|(?=^\\s*+\\S+?\\s+::{0,2}=\\s|\\s+\\|)'
 			beginCaptures: 0: name: "punctuation.definition.string.begin.ebnf"
 			endCaptures:   0: name: "punctuation.definition.string.end.ebnf"
 		},{
 			# 'Terminals'
 			name: "string.quoted.single.ebnf"
 			begin: "'"
-			end:   "'(?!')|(?=^\\s+*\\S+?\\s+::{0,2}=\\s|\\s+\\|)"
+			end:   "'(?!')|(?=^\\s*+\\S+?\\s+::{0,2}=\\s|\\s+\\|)"
 			beginCaptures: 0: name: "punctuation.definition.string.begin.ebnf"
 			endCaptures:   0: name: "punctuation.definition.string.end.ebnf"
 		},{
