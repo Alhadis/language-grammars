@@ -8,9 +8,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 [Unpublished]
 ------------------------------------------------------------------------
+* __Added:__ Support for [PEG.js](https://pegjs.org/) grammars
 * __Added:__ Improved support for [W3C-style][W3] EBNF
 
-[W3]: https://www.w3.org/TR/REC-xml/#sec-notation
+[PEG.js]: https://peggyjs.org/
+[W3]:     https://www.w3.org/TR/REC-xml/#sec-notation
 
 
 

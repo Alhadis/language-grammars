@@ -26,3 +26,10 @@
 		commentStart: "/*"
 		commentEnd:   "*/"
 		increaseIndentPattern: "{\\s*$"
+
+".source.pegjs":
+	editor:
+		commentStart: "/*"
+		commentEnd:   "*/"
+		increaseIndentPattern: "{\\s*$|^(?!\\d)[$\\w]+(?>\\s+(?:\"[^\"]*+\"|'[^']*+'))?\\s*+$"
+		decreaseIndentPatterN: "^\\s*}"

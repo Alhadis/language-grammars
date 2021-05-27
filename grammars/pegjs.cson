@@ -1,0 +1,182 @@
+name: "PEG.js"
+scopeName: "source.pegjs"
+fileTypes: ["pegjs", "peggy"]
+patterns: [{
+	# Skip past commented and empty lines
+	begin: "\\A\\s*(?=$|/[/*])"
+	end:   "(?=[^/\\s]|/[^/*])"
+	patterns: [include: "#comments"]
+},{
+	begin: "(?=\\S)"
+	end:   "(?=A)B"
+	patterns: [{
+		# Initialiser
+		name:  "meta.prologue.initialiser.pegjs"
+		begin: "\\G(?={)"
+		end:   "(?<=})"
+		patterns: [include: "#block"]
+	}, include: "#main"]
+}]
+firstLineMatch: """(?x)
+
+	# Emacs modeline
+	-\\*-(?i:[ \\t]*(?=[^:;\\s]+[ \\t]*-\\*-)|(?:.*?[ \\t;]|(?<=-\\*-))[ \\t]*mode[ \\t]*:[ \\t]*)
+		(?i:peg-?js)
+	(?=[ \\t;]|(?<![-*])-\\*-).*?-\\*-
+
+	|
+
+	# Vim modeline
+	(?:(?:^|[ \\t])(?:vi|Vi(?=m))(?:m[<=>]?[0-9]+|m)?|[ \\t]ex)(?=:(?=[ \\t]*set?[ \\t][^\\r\\n:]+:)|:(?![ \\t]*set?[ \\t]))
+	(?:(?:[ \\t]*:[ \\t]*|[ \\t])\\w*(?:[ \\t]*=(?:[^\\\\\\s]|\\\\.)*)?)*[ \\t:]
+	(?:filetype|ft|syntax)[ \\t]*=
+		(?i:peg-?js)
+	(?=$|\\s|:)
+"""
+
+repository:
+	# Entry point
+	main:
+		patterns: [
+			{include: "#comments"}
+			{include: "#rule"}
+		]
+
+
+	# Embedded JavaScript
+	block:
+		name:  "meta.block.pegjs"
+		begin: "{"
+		end:   "}"
+		beginCaptures: 0: name: "punctuation.section.block.bracket.curly.begin.pegjs"
+		endCaptures:   0: name: "punctuation.section.block.bracket.curly.end.pegjs"
+		contentName: "source.embedded.js"
+		patterns: [include: "source.js"]
+
+
+	# Character set: [a-z] [^A-Z]
+	charSet:
+		begin: "(?=\\[)"
+		end:   "(?<=\\])(i)?"
+		endCaptures:
+			1: name: "storage.modifier.ignore-case.pegjs"
+		patterns: [include: "source.js.regexp"]
+
+
+	# JavaScript-style comments
+	comments:
+		patterns: [{
+			# // Line
+			name:  "comment.line.double-slash.pegjs"
+			begin: "//"
+			end:   "$"
+			beginCaptures:
+				0: name: "punctuation.definition.comment.pegjs"
+		},{
+			# /* Block */
+			name:  "comment.block.pegjs"
+			begin: "/\\*"
+			end:   "\\*/"
+			beginCaptures: 0: name: "punctuation.definition.comment.begin.pegjs"
+			endCaptures:   0: name: "punctuation.definition.comment.end.pegjs"
+		}]
+
+
+	# Stuff matched as part of an expression
+	exprInnards:
+		patterns: [
+			{include: "#strings"}
+			{include: "#label"}
+			{include: "#ruleRef"}
+			{include: "#charSet"}
+			{include: "#comments"}
+			{include: "#group"}
+			{include: "#block"}
+			{match: "/",     name: "keyword.operator.logical.or.pegjs"}
+			{match: "\\.",   name: "constant.character.wildcard.dot.match.any.pegjs"}
+			{match: "@",     name: "keyword.operator.pluck.pegjs"}
+			{match: "[&!]",  name: "keyword.operator.logical.predicate.pegjs"}
+			{match: "[?*+]", name: "keyword.operator.quantifier.pegjs"}
+		]
+
+
+	# (Group)
+	group:
+		name:  "meta.group.pegjs"
+		begin: "\\("
+		end:   "\\)"
+		beginCaptures: 0: name: "punctuation.definition.group.begin.pegjs"
+		endCaptures:   0: name: "punctuation.definition.group.end.pegjs"
+		patterns: [include: "#exprInnards"]
+
+
+	# Label identifier
+	label:
+		match: "(?!\\d)([$\\w]+)\\s*(:)"
+		captures:
+			1: name: "variable.label.pegjs"
+			2: name: "punctuation.definition.label.pegjs"
+
+
+	# Production rule
+	rule:
+		begin: "(?!\\d)(?=[$\\w])"
+		end:   "(?!\\G)"
+		patterns: [{
+			name:  "meta.rule.$1.definition.pegjs"
+			begin: "\\G([$\\w]+)"
+			end:   "\\s*(;)|(?=^\\s*(?:[^@$\\w\\s\\\\]|[$\\w]+(?!\\s*:)))"
+			applyEndPatternLast: true
+			beginCaptures:
+				1: name: "entity.name.rule.pegjs"
+			endCaptures:
+				1: name: "punctuation.delimiter.separator.semicolon.pegjs"
+			patterns: [{
+				# Optional human-readable name, enclosed in quotes
+				name:  "meta.rule.human-readable-name.pegjs"
+				begin: "(?=\"|')"
+				end:   "(?!\\G)"
+				patterns: [include: "#strings"]
+			},{
+				# Parsing expression
+				name:  "meta.expression.pegjs"
+				begin: "\\s*(=)\\s*"
+				end:   "(?=;|^(?=\\s*(?![$\\w]+\\s*:|/[^*/])[^\\s/\"'{]))"
+				beginCaptures:
+					1: name: "keyword.operator.assignment.pegjs"
+				patterns: [include: "#exprInnards"]
+			}, include: "#comments"]
+		}, include: "#comments"]
+
+
+	# Rule reference
+	ruleRef:
+		name: "entity.name.rule.reference.pegjs"
+		match: "(?!\\d)[$\\w]+"
+
+
+	# Quoted string literals
+	strings:
+		patterns: [{
+			# "Double-quoted"
+			name:  "string.quoted.double.pegjs"
+			begin: '"'
+			end:   '(?<![^\\\\]\\\\)(")(i)?'
+			beginCaptures:
+				0: name: "punctuation.definition.string.begin.pegjs"
+			endCaptures:
+				1: name: "punctuation.definition.string.end.pegjs"
+				2: name: "storage.modifier.ignore-case.pegjs"
+			patterns: [include: "source.js#string_escapes"]
+		},{
+			# 'Apostrophe-quoted'
+			name:  "string.quoted.single.pegjs"
+			begin: "'"
+			end:   "(?<![^\\\\]\\\\)(')(i)?"
+			beginCaptures:
+				0: name: "punctuation.definition.string.begin.pegjs"
+			endCaptures:
+				1: name: "punctuation.definition.string.end.pegjs"
+				2: name: "storage.modifier.ignore-case.pegjs"
+			patterns: [include: "source.js#string_escapes"]
+		}]
