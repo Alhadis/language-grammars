@@ -32,4 +32,4 @@
 		commentStart: "/*"
 		commentEnd:   "*/"
 		increaseIndentPattern: "{\\s*$|^(?!\\d)[$\\w]+(?>\\s+(?:\"[^\"]*+\"|'[^']*+'))?\\s*+$"
-		decreaseIndentPatterN: "^\\s*}"
+		decreaseIndentPattern: "^\\s*}"
