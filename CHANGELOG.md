@@ -3,14 +3,16 @@ Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-[Unpublished]: ../../compare/v1.1.0...HEAD
+[Unpublished]: ../../compare/v1.2.0...HEAD
 
 
-[Unpublished]
+[v1.2.0]
 ------------------------------------------------------------------------
+**July 2nd, 2021**  
 * __Added:__ Support for [PEG.js][]/[Peggy][] grammars
 * __Added:__ Improved support for [W3C-style][W3] EBNF
 
+[v1.2.0]: https://github.com/Alhadis/language-grammars/releases/tag/v1.2.0
 [PEG.js]: https://pegjs.org/
 [Peggy]:  https://peggyjs.org/
 [W3]:     https://www.w3.org/TR/REC-xml/#sec-notation
