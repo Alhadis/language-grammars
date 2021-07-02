@@ -14,6 +14,7 @@ Supported formats
 *	[Labelled Backus-Naur Form][LBNF]
 *	[Lark][]
 *	[Lex][]  / [Flex][]
+*	[PEG.js] / [Peggy][]
 *	[Yacc][] / [Bison][]
 
 Includes highlighting for embedded C/C++ source (Yacc/Lex files only).
@@ -53,3 +54,5 @@ Previews
 [Flex]:  https://en.wikipedia.org/wiki/Flex_(lexical_analyser_generator)
 [Yacc]:  https://en.wikipedia.org/wiki/Yacc
 [Bison]: https://www.gnu.org/software/bison/manual/bison.html
+[PEG.js]: https://pegjs.org/
+[Peggy]:  https://peggyjs.org/
