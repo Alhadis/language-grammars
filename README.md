@@ -11,6 +11,7 @@ Supported formats
 *	[Augmented Backus-Naur Form][ABNF]
 *	[Backus-Naur Form][BNF]
 *	[Extended Backus-Naur Form][EBNF] ([ISO/IEC 14977][] + extensions)
+*	[GOLD Parser][GOLD]
 *	[Labelled Backus-Naur Form][LBNF]
 *	[Lark][]
 *	[Lex][]  / [Flex][]
@@ -48,6 +49,7 @@ Previews
 [BNF]:  https://en.wikipedia.org/wiki/Backus–Naur_form
 [EBNF]: https://en.wikipedia.org/wiki/Extended_Backus–Naur_form
 [ISO/IEC 14977]: http://www.cl.cam.ac.uk/~mgk25/iso-14977.pdf
+[GOLD]:  http://goldparser.org/doc/grammars/index.htm
 [LBNF]:  https://github.com/BNFC/bnfc/blob/master/docs/lbnf.rst
 [Lark]:  https://lark-parser.readthedocs.io/en/latest/grammar.html
 [Lex]:   https://en.wikipedia.org/wiki/Lex_(software)

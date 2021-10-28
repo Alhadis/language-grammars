@@ -6,4 +6,19 @@
 		&.syntax--storage.syntax--modifier         { color: #8dc149; }
 		&.syntax--keyword.syntax--control          { color: #cc3e44; }
 	}
+	.syntax--goldgrm{
+		&.syntax--constant.syntax--codepoint       { color: #a074c4; }
+		&.syntax--support.syntax--character-set    { color: #cbcb41; }
+		&.syntax--tag{
+			&.syntax--punctuation.syntax--definition { color: #4d5a5e; }
+			&.syntax--entity.syntax--name            { color: #7494a3; }
+		}
+	}
+}
+
+// Kludge for Atom's buggy handling of OpenType ligatures
+.syntax--source.syntax--goldgrm{
+	span.syntax--punctuation.syntax--range.syntax--character-class{
+		display: inline-block;
+	}
 }

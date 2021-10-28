@@ -12,6 +12,25 @@
 		commentEnd:   "*)"
 		increaseIndentPattern: "=\\s*$"
 
+".source.goldgrm":
+	editor:
+		commentStart: "! "
+		increaseIndentPattern: '>\\s*::=\\s*$|"\\s*=\\s*$'
+	"bracket-matcher":
+		autocompleteCharacters: [
+			"()"
+			"[]"
+			"{}"
+			'""'
+			"''"
+			"``"
+			"“”"
+			"‘’"
+			"<>"
+			"«»"
+			"‹›"
+		]
+
 ".source.lark":
 	editor:
 		commentStart: "// "

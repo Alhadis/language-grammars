@@ -1,0 +1,317 @@
+!  Line comment                   1
+!* Block comment *!               2
+!* Nested !* block *! comment *!  3
+
+Example1     = a b c*                   ! ab, abc, abcc, abccc, abcccc, ...
+Example2     = a b? c                   ! abc, ac
+Example3     = a | b | c                ! a, b, c
+Example4     = a[12]*b                  ! ab, a1b, a2b, a12b, a21b, a22b, a111b, ...
+Example5     = '*'+                     ! *, **, ***, ****, ...
+Example6     = {Letter}+                ! cat, dog, Sacramento, ...
+Identifier   = {Letter}{AlphaNumeric}* 	! e4, Param4b, Color2, temp, ...
+ListFunction = c[ad]+r 	                ! car, cdr, caar, cadr, cdar, cddr, caaar, ...
+ListFunction = c(a|d)+r
+NewLine      = {CR}{LF}|{CR}
+
+{#123 .. #12}
+{&A0}
+{#1 .. #1}
+{&1 .. &1}
+
+{Hex Char}    = {Digit} + [ABCDEF]
+{String Char} = {Printable} - ["]
+
+
+!*
+	Group examples
+	http://goldparser.org/doc/grammars/example-group.htm
+*!
+
+HTML Start      = '<html>'
+HTML End        = '</html>'
+<Assign>      ::= Identifier '=' <Value>
+<Value>       ::= StringLiteral |  HTML
+
+HTML    Block  @= { Nesting = None, Advance = Character }
+Comment Block  @= { Nesting = All, Advance = Character }
+
+Comment Start   = '*/'
+Comment End     = '/*'
+Comment Line    = '//'
+
+<Statement> ::= if <Expression> then <Statements> end
+<Statement> ::= if <Expression> then <Statements> end
+	| while <Expression> do <Statements> end
+	| for Id = <Range>   do <Statements> end
+<Statement> ::= if    <Expression> then <Statements> end
+<Statement> ::= while <Expression> do   <Statements> end
+<Statement> ::= for Id = <Range>   do   <Statements> end
+
+<Optional Keyword> ::= Keyword
+	|
+
+<Optional Keyword> ::= Keyword
+	| <>
+
+<Value> ::= Identifier
+	|  <Literal>
+
+<Literal> ::= Number
+	|  String
+
+<For Statement> ::=
+	for '('
+		<Opt Exp> ';'
+		<Opt Exp> ';'
+		<Opt Exp>
+	')' <Statements>
+
+<Opt Exp> ::= <Expression>
+	|
+
+<List> ::=
+	  <List> ',' Identifier
+	| Identifier
+
+<Expression> ::=
+	  <Expression> '+' <Mult Exp>
+	| <Expression> '-' <Mult Exp>
+	| <Mult Exp>
+
+<Mult Exp> ::=
+	  <Mult Exp> '*' <Negate Exp>
+	| <Mult Exp> '/' <Negate Exp>
+	| <Negate Exp>
+
+<Negate Exp> ::=
+	  '-' <Value>
+	| <Value>
+
+<Value> ::=
+	  ID
+	| Integer
+	| '(' <Expression> ')'
+
+
+Identifier = {Letter}{Alphanumeric}*
+
+<List> ::=
+	  <List> ',' <List Item>
+	| <List Item>
+
+<List Item> ::= Identifier
+
+Identifier = {Letter}{Alphanumeric}*
+
+<List> ::= <List> <Statement> ';' |
+
+<Statement> ::=
+	  print '(' Identifier ')'
+	| read  '(' Identifier ')'
+
+Identifier = {Letter}{Alphanumeric}*
+
+<List> ::=
+	  <List> <Statement> ';'
+	| <Statement> ';'
+
+<Statement> ::=
+	  print '(' Identifier ')'
+	| read  '(' Identifier ')'
+
+CommentBlock   @= { Nesting = All, Advance = Character }
+IndentIncrease @= { Source = Virtual }
+IndentDecrease @= { Source = Virtual }
+IgnoreMe        = '--' {Letter}+
+IgnoreMe       @= { Type = Noise }
+
+StartTerminal  = '{' | '(*'
+EndTerminal    = '}' | '*)'
+Comment Start  = '*/'
+Comment End    = '/*'
+Comment Block @= { Nesting = All, Advance = Character }
+
+Comment Start  = StartTerminal
+Comment End    = EndTerminal 
+
+
+!*
+	Predefined character set listing:
+	http://goldparser.org/doc/grammars/predefined-sets.htm
+*!
+
+{All Latin}
+{All Letters}
+{All Newline}
+{All Printable}
+{All Space}
+{All Valid}
+{All Whitespace}
+{Alphabetic Presentation Forms}
+{AlphaNumeric}
+{ANSI Mapped}
+{ANSI Printable}
+{Arabic Presentation Forms-A}
+{Arabic Presentation Forms-B}
+{Arabic Supplement}
+{Arabic}
+{Armenian}
+{Arrows}
+{Balinese}
+{Bamum}
+{Basic Latin}
+{Bengali}
+{Block Elements}
+{Bopomofo Extended}
+{Bopomofo}
+{Box Drawing}
+{Braille Patterns}
+{Buginese}
+{Buhid}
+{Cham}
+{Cherokee}
+{CJK Compatibility Forms}
+{CJK Compatibility Ideographs}
+{CJK Compatibility}
+{CJK Radicals Supplement}
+{CJK Strokes}
+{CJK Symbols and Punctuation}
+{CJK Unified Ideographs Extension A}
+{CJK Unified Ideographs}
+{Combining Diacritical Marks for Symbols}
+{Combining Diacritical Marks Supplement}
+{Combining Diacritical Marks}
+{Combining Half Marks}
+{Common Indic Number Forms}
+{Control Codes}
+{Control Pictures}
+{Coptic}
+{CR}
+{Currency Symbols}
+{Cyrillic Extended-A}
+{Cyrillic Extended-B}
+{Cyrillic Supplement}
+{Cyrillic}
+{Devanagari Extended}
+{Devanagari}
+{Digit}
+{Dingbats}
+{Enclosed Alphanumerics}
+{Enclosed CJK Letters and Months}
+{Ethiopic Extended}
+{Ethiopic Supplement}
+{Ethiopic}
+{Euro Sign}
+{FF}
+{Formatting}
+{General Punctuation}
+{Geometric Shapes}
+{Georgian Supplement}
+{Georgian}
+{Glagolitic}
+{Greek and Coptic}
+{Greek Extended}
+{Gujarati}
+{Gurmukhi}
+{Halfwidth and Fullwidth Forms}
+{Hangul Compatibility Jamo}
+{Hangul Jamo Extended-A}
+{Hangul Jamo Extended-B}
+{Hangul Jamo}
+{Hangul Syllables}
+{Hanunoo}
+{Hebrew}
+{Hiragana}
+{HT}
+{Ideographic Description Characters}
+{IPA Extensions}
+{Javanese}
+{Kanbun}
+{Kangxi Radicals}
+{Kannada}
+{Katakana Phonetic Extensions}
+{Katakana}
+{Kayah Li}
+{Khmer Symbols}
+{Khmer}
+{Lao}
+{Latin Extended Additional}
+{Latin Extended-A}
+{Latin Extended-B}
+{Latin Extended-C}
+{Latin Extended-D}
+{Latin-1 Supplement}
+{Lepcha}
+{Letter Extended}
+{Letter}
+{Letterlike Symbols}
+{LF}
+{Limbu}
+{Lisu}
+{LS}
+{Malayalam}
+{Mathematical Operators}
+{Meetei Mayek}
+{Miscellaneous Mathematical Symbols-A}
+{Miscellaneous Mathematical Symbols-B}
+{Miscellaneous Symbols and Arrows}
+{Miscellaneous Symbols}
+{Miscellaneous Technical}
+{Modifier Tone Letters}
+{Mongolian}
+{Myanmar Extended-A}
+{Myanmar}
+{NBSP}
+{New Tai Lue}
+{NKo}
+{Number Forms}
+{Number}
+{Ogham}
+{Ol Chiki}
+{Optical Character Recognition}
+{Oriya}
+{Phags-pa}
+{Phonetic Extensions Supplement}
+{Phonetic Extensions}
+{Printable Extended}
+{Printable}
+{Private Use Area}
+{PS}
+{Rejang}
+{Runic}
+{Samaritan}
+{Saurashtra}
+{Sinhala}
+{Small Form Variants}
+{Space}
+{Spacing Modifier Letters}
+{Sundanese}
+{Superscripts and Subscripts}
+{Supplemental Arrows-A}
+{Supplemental Arrows-B}
+{Supplemental Mathematical Operators}
+{Supplemental Punctuation}
+{Syloti Nagri}
+{Syriac}
+{Tagalog}
+{Tagbanwa}
+{Tai Le}
+{Tai Tham}
+{Tai Viet}
+{Tamil}
+{Telugu}
+{Thaana}
+{Thai}
+{Tibetan}
+{Tifinagh}
+{Unified Canadian Aboriginal Syllabics Extended}
+{Unified Canadian Aboriginal Syllabics}
+{Vai}
+{Variation Selectors}
+{Vedic Extensions}
+{Vertical Forms}
+{VT}
+{Whitespace}
+{Yi Radicals}
+{Yi Syllables}
+{Yijing Hexagram Symbols}

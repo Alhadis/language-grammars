@@ -6,6 +6,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [Unpublished]: ../../compare/v1.2.0...HEAD
 
 
+[Unpublished]
+------------------------------------------------------------------------
+* __Added:__ Support for [GOLD][] grammars
+
+[GOLD]: http://goldparser.org/builder/index.htm
+
+
+
 [v1.2.0]
 ------------------------------------------------------------------------
 **July 2nd, 2021**  
