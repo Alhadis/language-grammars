@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [Unpublished]
 ------------------------------------------------------------------------
 * __Added:__ Support for [GOLD][] grammars
+* __Added:__ `.ypp` to recognised Yacc extensions
 
 [GOLD]: http://goldparser.org/builder/index.htm
 

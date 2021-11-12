@@ -1,6 +1,6 @@
 name: "Yacc/Bison"
 scopeName: "source.yacc"
-fileTypes: ["bison", "y", "yy", "yacc"]
+fileTypes: ["bison", "y", "yy", "ypp", "yacc"]
 patterns: [include: "#main"]
 firstLineMatch: """(?x)
 
