@@ -52,3 +52,10 @@
 		commentEnd:   "*/"
 		increaseIndentPattern: "{\\s*$|^(?!\\d)[$\\w]+(?>\\s+(?:\"[^\"]*+\"|'[^']*+'))?\\s*+$"
 		decreaseIndentPattern: "^\\s*}"
+
+".text.grammarkdown":
+	editor:
+		commentStart: "/*"
+		commentEnd:   "*/"
+		increaseIndentPattern: "^\\s*(?=\\S)[^:]+:{1,}(?!\\s*one\\s+of\\s+\\S)"
+		decreaseIndentPattern: "^\\s*(?=\\S)[^:]+:{1,}(?!\\s*one\\s+of\\s+\\S)"

@@ -1,0 +1,69 @@
+@line 20 '/dev/stdin'
+@define noUnusedParameters true
+
+Bar ::
+	`Bar`
+
+One ::
+	U+0031
+
+Production ::
+	`Foo` Bar ? `Baz`
+
+Foo ::
+	SourceCharacter but not one of `"` or `\` or U+0000 through U+001F
+
+SourceCharacter :: one of
+	`A` `B` `C` `D` `E` `F` `G` `H` `I` `J` `K` `L` `M` `N`
+	`O` `P` `Q` `R` `S` `T` `U` `V` `W` `X` `Y` `Z` `0` `1`
+	`2` `3` `4` `5` `6` `7` `8` `9` 
+
+@define noUnusedParameters false
+A[A] :
+	`a` // ok
+
+@define noUnusedParameters true
+B[A] :: `a` // error
+
+@define noUnusedParameters false
+C[A] ::
+	`a` // ok
+
+@define noUnusedParameters true
+D[A] :: `a` // error
+
+@define noUnusedParameters default
+E[A] :: `a` // ok
+
+Etc :
+	SourceCharacter but not `A` or `Z`
+	U+0000 through U+00FF
+
+Empty ::
+	[empty]
+
+AE:
+	[lookahead == `equal`]
+	[lookahead != `unequal`]
+	[lookahead ≠  `unequal`]
+	[lookahead <- {`match`, `in`, `set`}]
+	[lookahead ∈  {`match`, `in`, `set`}]
+	[lookahead <! {`no match`, `in`, `set`}]
+	[lookahead ∉  {`no match`, `in`, `set`}]
+
+NAH:
+	[no Foo here]
+
+Goal:
+	[lexical goal InputElementRegExp]
+
+Param[Yield]:
+	[~Yield] `wat`
+
+DudeWat:
+	[> prose text `terminal` prose text |NonTerminal| prose text]
+
+Declaration[Yield] :
+	HoistableDeclaration[?Yield]       #declaration-hoistable
+	ClassDeclaration[?Yield]           #declaration-class
+	LexicalDeclaration[In, ?Yield]     #declaration-lexical
