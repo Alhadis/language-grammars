@@ -156,7 +156,7 @@ repository:
 	exclusion:
 		name:  "meta.exclusion.grammarkdown"
 		begin: "(?:^|\\G|(?<=\\s))(but\\s+not)(?=$|\\s)"
-		end:   "(?=\\s*(?i:$|/[/*])|</emu-grammar\\s*>)"
+		end:   "(?=\\s*(?i:$|/[/*]|</emu-grammar\\s*>))"
 		beginCaptures:
 			1: name: "keyword.operator.logical.negation.negate.not.grammarkdown"
 		patterns: [{
@@ -308,7 +308,7 @@ repository:
 			# Indented definition
 			name:  "meta.production.indented.grammarkdown"
 			begin: "(?:^|\\G)(\\s*)(\\w+)(?:\\s*(\\[[^\\]]*\\]))?\\s*(:{1,3})[ \\t]*(?:(one\\s+of)(?=$|\\s)\\s*)?[ \\t]*$"
-			end:   "^(?:(?=\\s*$)|(?!\\1[ \\t]+(?:[^\\s/]|/(?!/|\\*))))"
+			end:   "(?i)(?=\\s*</emu-grammar\\s*>)|^(?:(?=\\s*$)|(?!\\1[ \\t]+(?:[^\\s/]|/(?!/|\\*))))"
 			beginCaptures:
 				2: name: "entity.name.production.grammarkdown", patterns: [include: "#reserved"]
 				3: patterns: [include: "#parameters"]
@@ -353,7 +353,7 @@ repository:
 	prose:
 		name:  "markup.quote.prose.grammarkdown"
 		begin: "(?:^|\\G)\\s*(>)[ \\t]*"
-		end:   "(?=\\s*(?i:$|/[/*])|</emu-grammar\\s*>)"
+		end:   "(?=\\s*(?i:$|/[/*]|</emu-grammar\\s*>))"
 		beginCaptures:
 			1: name: "punctuation.section.quote.grammarkdown"
 
@@ -385,7 +385,7 @@ repository:
 	# Character's Unicode name enclosed in angle-brackets: “<NBSP>”
 	"unicode-char":
 		name: "constant.character.named.unicode-name.grammarkdown"
-		match: "(<)[^>]+(>)"
+		match: "(<)(?!/emu-grammar\\s*>)[^>]+(>)"
 		captures:
 			1: name: "punctuation.definition.character.begin.grammarkdown"
 			2: name: "punctuation.definition.character.end.grammarkdown"
