@@ -111,10 +111,11 @@ repository:
 
 	# Assert the presence or absence of a production parameter
 	"assertion-parameter":
-		match: "\\G([+~])\\s*(\\w+)"
+		match: "(?:^|\\G|(,))\\s*([+~?])\\s*(\\w+)"
 		captures:
-			1: name: "keyword.operator.parameter-test.grammarkdown"
-			2: patterns: [include: "#ref"]
+			1: patterns: [include: "#comma"]
+			2: name: "keyword.operator.parameter-test.grammarkdown"
+			3: patterns: [include: "#ref"]
 
 
 	# Prose assertion, which… allows prose to be used in an assertion
