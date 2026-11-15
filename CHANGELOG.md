@@ -10,9 +10,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ------------------------------------------------------------------------
 * __Added:__ Support for [GOLD][] and [Grammarkdown][] grammars
 * __Added:__ `.ypp` to recognised Yacc extensions
+* __Added:__ Support for [RFC 7405][] `%s` and `%i` strings in ABNF
+* __Fixed:__ ABNF repetition counts like `1*10DIGIT` and `2DIGIT`
 
 [GOLD]: http://goldparser.org/builder/index.htm
 [Grammarkdown]: https://github.com/rbuckton/grammarkdown
+[RFC 7405]: https://www.rfc-editor.org/rfc/rfc7405
 
 
 

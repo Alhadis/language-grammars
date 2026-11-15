@@ -57,3 +57,11 @@ prose-val = "<" *(%x20-3D / %x3F-7E) ">"
 	;  without angles
 	; prose description, to be used as
 	;  last resort
+
+; RFC 7405 case-sensitive and case-insensitive strings
+lower = %i"aBc"
+exact = %s"aBc"
+
+; RFC 5234 bounded and specific repetition
+date = 4DIGIT "-" 2DIGIT "-" 2DIGIT
+name = 1*10ALPHA *2("-" 1*10ALPHA)
