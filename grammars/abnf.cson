@@ -149,24 +149,26 @@ repository:
 	terminal:
 		patterns: [{
 			# Case-sensitive string (RFC 7405)
-			name:  "string.quoted.double.case-sensitive.abnf"
-			begin: '(%)([sS])(")'
+			name:  "string.quoted.double.case.sensitive.abnf"
+			begin: '((%)[sS])(")'
 			end:   '"'
 			beginCaptures:
-				1: name: "punctuation.definition.terminal.percentage-sign.abnf"
-				2: name: "storage.modifier.case-sensitive.abnf"
+				1: name: "storage.modifier.case.sensitive.abnf"
+				2: name: "punctuation.definition.terminal.percentage-sign.abnf"
 				3: name: "punctuation.definition.string.begin.abnf"
-			endCaptures: 0: name: "punctuation.definition.string.end.abnf"
+			endCaptures:
+				0: name: "punctuation.definition.string.end.abnf"
 		},{
 			# Case-insensitive string (RFC 7405)
-			name:  "string.quoted.double.case-insensitive.abnf"
-			begin: '(%)([iI])(")'
+			name:  "string.quoted.double.case.insensitive.abnf"
+			begin: '((%)[iI])(")'
 			end:   '"'
 			beginCaptures:
-				1: name: "punctuation.definition.terminal.percentage-sign.abnf"
-				2: name: "storage.modifier.case-insensitive.abnf"
+				1: name: "storage.modifier.case.insensitive.abnf"
+				2: name: "punctuation.definition.terminal.percentage-sign.abnf"
 				3: name: "punctuation.definition.string.begin.abnf"
-			endCaptures: 0: name: "punctuation.definition.string.end.abnf"
+			endCaptures:
+				0: name: "punctuation.definition.string.end.abnf"
 		},{
 			# Decimal codepoint
 			name:  "meta.terminal.numeric.decimal.abnf"
