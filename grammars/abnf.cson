@@ -54,7 +54,7 @@ repository:
 	"core-rules":
 		name: "support.constant.reference.core-rule.abnf"
 		match: """(?x)
-			\\b (?<!-)
+			(?<![-A-Za-z])
 			(ALPHA|BIT|CHAR|CRLF|CR|CTL|DIGIT|DQUOTE
 			|HEXDIG|HTAB|LF|LWSP|OCTET|SP|VCHAR|WSP)
 			\\b (?!-)
@@ -119,13 +119,15 @@ repository:
 		endCaptures:   0: name: "punctuation.definition.string.end.abnf"
 
 
-	# Repetition
+	# Repetition: <a>*<b> or exact count
 	quantifier:
 		name:  "meta.quantifier.abnf"
-		match: "([0-9]*)(\\*)"
+		match: "([0-9]*)(\\*)([0-9]*)|([0-9]+)(?=[A-Za-z(\\[\"%<])"
 		captures:
 			1: name: "constant.numeric.decimal.integer.int.abnf"
 			2: name: "keyword.operator.logical.repetition.asterisk.star.abnf"
+			3: name: "constant.numeric.decimal.integer.int.abnf"
+			4: name: "constant.numeric.decimal.integer.int.abnf"
 
 
 	# Rule reference
@@ -146,6 +148,28 @@ repository:
 	# Terminal characters
 	terminal:
 		patterns: [{
+			# Case-sensitive string (RFC 7405)
+			name:  "string.quoted.double.case.sensitive.abnf"
+			begin: '((%)[sS])(")'
+			end:   '"'
+			beginCaptures:
+				1: name: "storage.modifier.case.sensitive.abnf"
+				2: name: "punctuation.definition.terminal.percentage-sign.abnf"
+				3: name: "punctuation.definition.string.begin.abnf"
+			endCaptures:
+				0: name: "punctuation.definition.string.end.abnf"
+		},{
+			# Case-insensitive string (RFC 7405)
+			name:  "string.quoted.double.case.insensitive.abnf"
+			begin: '((%)[iI])(")'
+			end:   '"'
+			beginCaptures:
+				1: name: "storage.modifier.case.insensitive.abnf"
+				2: name: "punctuation.definition.terminal.percentage-sign.abnf"
+				3: name: "punctuation.definition.string.begin.abnf"
+			endCaptures:
+				0: name: "punctuation.definition.string.end.abnf"
+		},{
 			# Decimal codepoint
 			name:  "meta.terminal.numeric.decimal.abnf"
 			begin: "(%)(d|D)"
